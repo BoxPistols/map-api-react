@@ -1,18 +1,14 @@
 import React from 'react';
 import Style from './Box.module.sass';
 export default function Box () {
-  function Counter (props) {
-    function countUp (c) { // 仮引数
-      return alert (c);
+  class Counter extends React.Component {
+    render () {
+      return (
+        <div style={{backgroundColor: this.props.color}}>
+          0
+        </div>
+      );
     }
-    return (
-      <div
-        style={{backgroundColor: props.color}}
-        onClick={() => countUp (props.color)}
-      >
-        0
-      </div>
-    );
   }
   return (
     <div>
