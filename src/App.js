@@ -1,14 +1,13 @@
 import React from 'react';
-import './App.scss';
+import './App.sass';
+import Box from './components/Box/Box';
 
-import Box from './components/Box/Box'
+function App () {
 
-function App() {
   return (
     <div className="App">
       <Box/>
     </div>
   );
 }
-
 export default App;
