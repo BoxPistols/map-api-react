@@ -18,19 +18,24 @@ class ActionGreet extends Component {
   handleChangeName (e) {
     this.setState ({name: e.target.value});
   }
+  changeName (e) {
+    this.setState ({name: 'XXX'});
+  }
   render () {
     return (
       <div>
-        <input
-          type="text"
-          value={this.state.name}
-          // event関数 値の監視と取得
-          onChange={e => this.handleChangeName (e)}
-        />
-        {/* 設置する値の送信 */}
-        <button onClick={() => this.handleChangeName ('Bob!')}>Button</button>
+        <div className="section">
+          <input
+            type="text"
+            value={this.state.name}
+            // event関数 値の監視と取得
+            onChange={e => this.handleChangeName (e)}
+          />
+          {/* 設置する値の送信 */}
+          <button onClick={() => this.changeName ()}>Button</button>
+        </div>
         <p>State: {this.state.msg}</p>
-        <p>Props: {this.props.msg}</p>
+        {/*<p>Props: {this.props.msg}</p>*/}
         {/* 表示する受動値 */}
         <Greeting name={this.state.name} />
       </div>
