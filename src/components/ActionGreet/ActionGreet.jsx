@@ -6,33 +6,26 @@ class ActionGreet extends Component {
     super (props);
     this.state = {
       name: 'myName',
+      msg: 'Hell in',
     };
   }
 
-  // handleIn () {
-  //   this.setState ({name: 'Bob'});
-  // }
-  // handleOut () {
-  //   this.setState ({name: 'Mike'});
-  // }
-
-  handleNameChange(e){
-    console.log(e.target.value)
-    this.setState({name: e.target.value})
+  // フォームの入力値変動の監視用関数
+  handleChangeName (e) { // 引数
+    this.setState ({name: e.target.value});
   }
   render () {
     return (
       <div
-        // onMouseOver={() => this.handleIn ()}
-        // onMouseOut={() => this.handleOut ()}
       >
-      <input
-        type="text"
-        value={this.state.name}
-        onChange={e => this.handleNameChange(e)}
+        <input
+          type="text"
+          value={this.state.name}
+          onChange={e => this.handleChangeName (e)}
         />
-
-        <Greeting name={this.state.name} />
+        <p>State: {this.state.msg}</p>
+        <p>Props: {this.props.msg}</p>
+        <Greeting name={this.state.name}/>
       </div>
     );
   }
