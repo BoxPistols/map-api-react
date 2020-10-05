@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
+import axios from 'axios'
 import './App.sass'
 //import Box from './components/Box/Box';
 // import ActionGreet from './components/ActionGreet/ActionGreet'
 import SearchForm from './components/SearchForm/SearchForm'
 import GeoCodeResult from './components/GeoCodeResult/GeoCodeResult'
+
+const GEOCODE_ENDPOINT = 'https://maps.googleapis.com/maps/api/geocode/json'
 
 class App extends Component {
   constructor(props) {
@@ -11,7 +14,24 @@ class App extends Component {
     this.state = {}
   }
   handlePlaceSubmit(place) {
-    console.log(place)
+    axios
+      .get(GEOCODE_ENDPOINT, {
+        params: {
+          address: place,
+          key: 'AIzaSyDI2ZzkEd-EBZ3suudoCaprv_vy4nk8JFk',
+        },
+      })
+      .then((results) => {
+        console.log(results)
+        const result = results.data.results[0]
+        const location = result.geometry.location
+        this.setState({
+          address: result.formatted_address,
+        })
+      })
+      .catch((err) => {
+        console.error(err)
+      })
   }
   render() {
     return (
@@ -25,7 +45,7 @@ class App extends Component {
           <SearchForm onSubmit={(place) => this.handlePlaceSubmit(place)} />
         </section>
         <section className="section">
-          <GeoCodeResult />
+          <GeoCodeResult address={this.state.address} />
         </section>
       </div>
     )
