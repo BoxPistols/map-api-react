@@ -6,6 +6,8 @@ import './App.sass'
 import SearchForm from './components/SearchForm/SearchForm'
 import GeoCodeResult from './components/GeoCodeResult/GeoCodeResult'
 
+const API_KEY = process.env.REACT_APP_API_KEY
+
 const GEOCODE_ENDPOINT = 'https://maps.googleapis.com/maps/api/geocode/json'
 
 class App extends Component {
@@ -13,24 +15,48 @@ class App extends Component {
     super(props)
     this.state = {}
   }
+
+  setErrorMessage(mesasge) {
+    this.setState({
+      address: mesasge,
+      lat: 0,
+      lng: 0,
+    })
+  }
+
   handlePlaceSubmit(place) {
     axios
       .get(GEOCODE_ENDPOINT, {
         params: {
           address: place,
-          key: 'AIzaSyDI2ZzkEd-EBZ3suudoCaprv_vy4nk8JFk',
+          key: API_KEY,
         },
       })
       .then((results) => {
         console.log(results)
+        const data = results.data
         const result = results.data.results[0]
-        const location = result.geometry.location
-        this.setState({
-          address: result.formatted_address,
-        })
+        switch (data.status) {
+          case 'OK': {
+            const location = result.geometry.location
+            this.setState({
+              address: result.formatted_address,
+              lat: location.lat,
+              lng: location.lng,
+            })
+            break
+          }
+          case 'ZERO_RESULTS': {
+            this.setErrorMessage('見つかりませんでした、再度検索してください')
+            break
+          }
+          default: {
+            this.setErrorMessage('エラーが発生しました')
+          }
+        }
       })
       .catch((err) => {
-        console.error(err)
+        this.setErrorMessage('通信に失敗しました')
       })
   }
   render() {
@@ -45,7 +71,11 @@ class App extends Component {
           <SearchForm onSubmit={(place) => this.handlePlaceSubmit(place)} />
         </section>
         <section className="section">
-          <GeoCodeResult address={this.state.address} />
+          <GeoCodeResult
+            address={this.state.address}
+            lat={this.state.lat}
+            lng={this.state.lng}
+          />
         </section>
       </div>
     )

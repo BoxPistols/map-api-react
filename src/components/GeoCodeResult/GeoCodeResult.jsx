@@ -7,7 +7,7 @@ const GeoCodeResult = ({ address, lat, lng }) => (
     <ul>
       <li>住所：{address}</li>
       <li>緯度：{lat}</li>
-      <li>軽度：{lng}</li>
+      <li>経度：{lng}</li>
     </ul>
   </div>
 )
