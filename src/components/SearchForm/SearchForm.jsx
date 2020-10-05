@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 
-class Search extends Component {
+class SearchForm extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -10,10 +11,14 @@ class Search extends Component {
   handlePlaceChange(place) {
     this.setState({ place })
   }
+  handleSubmit(e) {
+    e.preventDefault()
+    this.props.onSubmit(this.state.place)
+  }
   render() {
     return (
       <div>
-        <form>
+        <form onSubmit={(e) => this.handleSubmit(e)}>
           <input
             type="text"
             value={this.state.place}
@@ -26,4 +31,7 @@ class Search extends Component {
   }
 }
 
-export default Search
+SearchForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+}
+export default SearchForm
