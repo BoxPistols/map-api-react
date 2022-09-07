@@ -24,7 +24,9 @@ class SearchForm extends Component {
             value={this.state.place}
             onChange={(e) => this.handlePlaceChange(e.target.value)}
           />
-          <input type="submit" value="検索" />
+          <button type="submit" value="検索">
+            検索
+          </button>
         </form>
       </div>
     )

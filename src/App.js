@@ -63,10 +63,8 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <section className="section">{/* <Box >*/}</section>
-        {/*<ActionGreet />*/}
         <section className="section">
-          <h1>緯度軽度検索</h1>
+          <h1>GG Map 緯度軽度検索</h1>
         </section>
         <section className="section">
           <SearchForm onSubmit={(place) => this.handlePlaceSubmit(place)} />
@@ -78,7 +76,7 @@ class App extends Component {
             lng={this.state.lng}
           />
         </section>
-        <section className="section">
+        <section className="section last">
           <Map lat={this.state.lat} lng={this.state.lng} />
         </section>
       </div>

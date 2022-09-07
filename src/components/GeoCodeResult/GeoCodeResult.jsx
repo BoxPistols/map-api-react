@@ -4,11 +4,11 @@ import PropTypes from 'prop-types'
 // functional Component
 const GeoCodeResult = ({ address, lat, lng }) => (
   <div>
-    <ul>
-      <li>住所：{address}</li>
-      <li>緯度：{lat}</li>
-      <li>経度：{lng}</li>
-    </ul>
+    <span>住所：{address}</span>
+    <br />
+    <div style={{ color: 'gray' }}>
+      <span>緯度：{lat}</span> / <span>経度：{lng}</span>
+    </div>
   </div>
 )
 
