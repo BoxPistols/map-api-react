@@ -10,7 +10,6 @@
     "dotenv": "^8.2.0",
     "dotenv-webpack": "^3.0.0",
     "google-maps-react": "^2.0.6",
-    "node-sass": "^4.14.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-google-maps": "^9.4.5",
