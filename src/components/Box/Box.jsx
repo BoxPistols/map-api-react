@@ -1,5 +1,5 @@
 import React from 'react'
-import Style from './Box.module.sass'
+import Style from './Box.module.scss'
 export default function Box() {
   // Class Component
   class Counter extends React.Component {

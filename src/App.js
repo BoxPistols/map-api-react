@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import './App.sass'
+import './App.scss'
 //import Box from './components/Box/Box';
 // import ActionGreet from './components/ActionGreet/ActionGreet'
 import SearchForm from './components/SearchForm/SearchForm'

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { withGoogleMap, GoogleMap, Marker } from 'react-google-maps'
-import Style from './Map.module.sass'
+import Style from './Map.module.scss'
 import { GoogleApiWrapper } from 'google-maps-react'
 
 const API = process.env.REACT_APP_API_KEY
