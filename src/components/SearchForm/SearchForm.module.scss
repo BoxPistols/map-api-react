@@ -1,12 +1,13 @@
-.searchFrame {
+.searchFrame  {
   position: relative;
 
   display: inline-block;
+  // min-width: 90vw;
 }
 
 .searchFrame input {
   padding-right: 1.5em;
-  // background: tomato;
+  min-width: 13em;
 }
 
 .searchFrame .clearButton {
