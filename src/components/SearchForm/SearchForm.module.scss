@@ -1,0 +1,54 @@
+.searchFrame {
+  position: relative;
+
+  display: inline-block;
+}
+
+.searchFrame input {
+  padding-right: 1.5em;
+
+  background: tomato;
+}
+
+.searchFrame .clearButton {
+  line-height: 1em;
+
+  /* visibility: hidden; */
+
+  position: absolute;
+  top: 2px;
+  right: 79px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 24px;
+  height: 24px;
+  padding: 3px;
+
+  cursor: pointer;
+  text-align: center;
+
+  color: #fff;
+  border-radius: 50%;
+  background: #ccc;
+}
+
+.searchFrame .clearButton:after {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+
+  display: block;
+
+  width: 15px;
+  height: 12px;
+
+  content: 'x';
+  transform: scale(1, 0.8);
+}
+
+input::-ms-clear {
+  display: none;
+}

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import Style from './SearchForm.module.scss'
 
 class SearchForm extends Component {
   constructor(props) {
@@ -17,18 +18,22 @@ class SearchForm extends Component {
   }
   render() {
     return (
-      <div>
-        <form onSubmit={(e) => this.handleSubmit(e)}>
+      <>
+        <form
+          onSubmit={(e) => this.handleSubmit(e)}
+          className={Style.searchFrame}
+        >
           <input
             type="text"
             value={this.state.place}
             onChange={(e) => this.handlePlaceChange(e.target.value)}
           />
+          <div class={Style.clearButton} onClick={() => alert()}></div>
           <button type="submit" value="検索">
             検索
           </button>
         </form>
-      </div>
+      </>
     )
   }
 }
