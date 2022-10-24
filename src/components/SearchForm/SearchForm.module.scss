@@ -6,14 +6,13 @@
 
 .searchFrame input {
   padding-right: 1.5em;
-
-  background: tomato;
+  // background: tomato;
 }
 
 .searchFrame .clearButton {
   line-height: 1em;
 
-  /* visibility: hidden; */
+  visibility: hidden;
 
   position: absolute;
   top: 2px;

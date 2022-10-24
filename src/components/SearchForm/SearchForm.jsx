@@ -11,24 +11,42 @@ class SearchForm extends Component {
   }
   handlePlaceChange(place) {
     this.setState({ place })
+    // tes
+    const target = document.getElementById('clear_button')
+    if (this.state.place.length > 0) {
+      target.style.visibility = 'visible'
+    }
   }
+
+  handleClear() {
+    const target = document.getElementById('clear_button')
+    target.style.visibility = 'hidden'
+  }
+
   handleSubmit(e) {
     e.preventDefault()
     this.props.onSubmit(this.state.place)
   }
+
   render() {
     return (
       <>
         <form
           onSubmit={(e) => this.handleSubmit(e)}
           className={Style.searchFrame}
+          name="searchForm"
         >
           <input
             type="text"
             value={this.state.place}
             onChange={(e) => this.handlePlaceChange(e.target.value)}
+            name="searchBox"
           />
-          <div class={Style.clearButton} onClick={() => alert()}></div>
+          <div
+            id="clear_button"
+            class={Style.clearButton}
+            onClick={() => this.handleClear()}
+          ></div>
           <button type="submit" value="検索">
             検索
           </button>
