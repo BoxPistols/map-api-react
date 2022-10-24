@@ -9,6 +9,7 @@ class SearchForm extends Component {
       place: '東京タワー',
     }
   }
+
   handlePlaceChange(place) {
     this.setState({ place })
     // tes
@@ -19,13 +20,18 @@ class SearchForm extends Component {
   }
 
   handleClear() {
+    this.setState({ place: '' })
+    const input = document.getElementById('input')
+    input.value = ''
     const target = document.getElementById('clear_button')
     target.style.visibility = 'hidden'
   }
 
   handleSubmit(e) {
     e.preventDefault()
-    this.props.onSubmit(this.state.place)
+    if (this.state.place.length > 0) {
+      this.props.onSubmit(this.state.place)
+    }
   }
 
   render() {
@@ -37,6 +43,7 @@ class SearchForm extends Component {
           name="searchForm"
         >
           <input
+            id="input"
             type="text"
             value={this.state.place}
             onChange={(e) => this.handlePlaceChange(e.target.value)}
