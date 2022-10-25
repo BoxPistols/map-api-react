@@ -1,52 +1,38 @@
-.searchFrame  {
+.searchFrame {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   position: relative;
-
-  display: inline-block;
-  // min-width: 90vw;
 }
 
-.searchFrame input {
-  padding-right: 1.5em;
+input {
   min-width: 13em;
 }
 
-.searchFrame .clearButton {
-  line-height: 1em;
-
-  visibility: hidden;
-
-  position: absolute;
-  top: 2px;
-  right: 79px;
-
+.clearButton {
   display: flex;
-  align-items: center;
   justify-content: center;
-
+  align-items: center;
+  visibility: hidden;
+  transform: translate(-100%, 0);
   width: 24px;
   height: 24px;
-  padding: 3px;
-
-  cursor: pointer;
-  text-align: center;
-
-  color: #fff;
+  padding: 0;
   border-radius: 50%;
   background: #ccc;
-}
+  color: #fff;
+  line-height: 1;
+  cursor: pointer;
 
-.searchFrame .clearButton:after {
-  position: absolute;
-  top: 3px;
-  right: 4px;
-
-  display: block;
-
-  width: 15px;
-  height: 12px;
-
-  content: 'x';
-  transform: scale(1, 0.8);
+  &:after {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: scale(1, .8);
+    width: 24px;
+    height: 24px;
+    content: "x";
+  }
 }
 
 input::-ms-clear {

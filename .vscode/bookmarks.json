@@ -9,6 +9,26 @@
 					"label": ""
 				}
 			]
+		},
+		{
+			"path": "csscomb.json",
+			"bookmarks": [
+				{
+					"line": 94,
+					"column": 14,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "../../../../../Library/Application Support/Code/User/settings.json",
+			"bookmarks": [
+				{
+					"line": 28,
+					"column": 33,
+					"label": ""
+				}
+			]
 		}
 	]
 }
