@@ -4,5 +4,14 @@
     "activityBar.background": "#47086F",
     "titleBar.activeBackground": "#630B9C",
     "titleBar.activeForeground": "#FCF9FF"
-  }
+  },
+  "csscomb.formatOnSave": true,
+  "css.format.enable": false,
+  "css.format.newlineBetweenRules": false,
+  "css.format.preserveNewLines": false,
+  "css.format.newlineBetweenSelectors": false,
+  "csscomb.ignoreFilesOnSave": [
+    "css"
+  ],
+  "csscomb.supportEmbeddedStyles": false
 }
