@@ -6,19 +6,21 @@
 
 html {
   font-size: 12px;
-  @media only screen and (min-width: 568px) {
+}
+@media only screen and (min-width: 568px) {
+  html {
     font-size: 14px;
   }
-  @media only screen and (min-width: 960px) {
+}
+@media only screen and (min-width: 960px) {
+  html {
     font-size: 16px;
   }
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #122;
@@ -29,8 +31,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 ul {
@@ -46,10 +47,10 @@ button {
   margin: 0;
   border: 0;
   position: relative;
-
-  &:focus {
-    outline: none;
-  }
+}
+input:focus,
+button:focus {
+  outline: none;
 }
 
 h1 {
@@ -59,4 +60,4 @@ h1 {
 
 .section {
   margin-bottom: 0.8rem;
-}
+}/*# sourceMappingURL=index.css.map */
