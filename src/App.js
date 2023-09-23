@@ -58,12 +58,21 @@ function App() {
   return (
     <div className="App">
       <section className="section">
-        <h1>GG Map 緯度軽度検索</h1>
+        <h1>
+          <ruby>
+            <span className="logo">GGMap</span>
+            <rp>(</rp>
+            <rt>ジージーマップ</rt>
+            <rp>)</rp>
+          </ruby>
+          <span className="text">緯度経度検索</span>
+          {/* ルビ文字 */}
+        </h1>
       </section>
       <section className="section">
         <SearchForm onSubmit={handlePlaceSubmit} />
       </section>
-      <section className="section">
+      <section className="section result-area">
         <GeoCodeResult
           address={state.address}
           lat={state.lat}

@@ -3,4 +3,49 @@
   flex-direction: column;
   padding: 1%;
   text-align: center;
+  background-color: #234;
+  max-height: 100vh;
+  overflow: hidden;
+  zoom: 1;
+}
+@media screen and (max-width: 768px) {
+  .App {
+    max-height: 100vh;
+    overflow: hidden;
+    zoom: 1;
+  }
+}
+
+.result-area {
+  background-color: #123;
+  padding: 0.5% 2%;
+  color: rgba(249, 249, 249, 0.8666666667);
+  font-size: 0.9rem;
+  width: -moz-fit-content;
+  width: fit-content;
+  margin: auto;
+  line-height: 1.75;
+}
+
+button.gm-control-active,
+button.gm-svpc {
+  width: -moz-fit-content !important;
+  width: fit-content !important;
+  height: auto !important;
+  padding: 0.25rem 0.5rem !important;
+  border-radius: 0.25rem !important;
+  margin: auto !important;
+  max-height: 75px !important;
+}
+button.gm-control-active > img,
+button.gm-svpc > img {
+  margin: auto !important;
+  transform: translate(-255%, -65%);
+  max-height: 75px !important;
+}
+button.gm-control-active img,
+button.gm-svpc img {
+  margin: auto !important;
+  max-width: 80px;
+  right: -15px;
 }/*# sourceMappingURL=App.css.map */

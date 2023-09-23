@@ -1,24 +1,7 @@
 .map {
-  height: 100%;
-  min-height: 70vh;
-  max-height: 80vh;
-  position: absolute;
-  top: 20vh;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-@media screen and (max-width: 768px) {
-  .map {
-    min-height: 65vh;
-    max-height: 78vh;
-    top: 38vh;
-  }
-}
-@media screen and (max-width: 568px) {
-  .map {
-    min-height: 65vh;
-    max-height: 78vh;
-    top: 20vh;
-  }
+  display: "block";
+  min-width: 100vh;
+  min-height: 100vh;
+  min-height: 78vh;
+  max-height: 88vh;
 }/*# sourceMappingURL=Map.module.css.map */

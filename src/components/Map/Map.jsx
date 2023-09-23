@@ -21,7 +21,16 @@ const Map = ({ lat, lng }) => {
   return (
     <InnerMap
       containerElement={<div />}
-      mapElement={<div className={Style.map} />}
+      mapElement={
+        <div
+          className={Style.map}
+          style={{
+            display: 'block',
+            height: '100%',
+            width: '100%',
+          }}
+        />
+      }
       position={position}
       marker={{ position }}
     />
@@ -32,11 +41,11 @@ Map.propTypes = {
   lat: PropTypes.number,
   lng: PropTypes.number,
 }
+
 Map.defaultProps = {
   lat: 35.6585805,
   lng: 139.7454329,
 }
-// export default Map
 export default GoogleApiWrapper({
   apiKey: API,
 })(Map)

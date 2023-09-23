@@ -4,4 +4,54 @@
   padding: 1%;
   text-align: center;
   // max-height: 30vh;
+  background-color: #234;
+  max-height: 100vh;
+  overflow: hidden;
+  zoom: 1;
+  // はみ出し対策　SP
+  @media screen and (max-width: 768px) {
+    max-height: 100vh;
+    overflow: hidden;
+    zoom: 1;
+  }
+}
+
+.result-area {
+  // 薄くする
+  background-color: #123;
+  padding: 0.5% 2%;
+  color: #f9f9f9dd;
+  font-size: 0.9rem;
+  width: fit-content;
+  margin: auto;
+  line-height: 1.75;
+}
+
+// Gogle Map API
+// .gmnoprint.gm-bundled-control.gm-bundled-control-on-bottom {
+//   margin-bottom: 40px !important;
+//   margin-right: 40px !important;
+// }
+
+button.gm-control-active,
+button.gm-svpc {
+  width: fit-content !important;
+  height: auto !important;
+  padding: 0.25rem 0.5rem !important;
+  border-radius: 0.25rem !important;
+  // background: none !important;
+  margin: auto !important;
+  max-height: 75px !important;
+
+  // 入れ子の画像を中央に
+  > img {
+    margin: auto !important;
+    transform: translate(-255%, -65%);
+    max-height: 75px !important;
+  }
+  img {
+    margin: auto !important;
+    max-width: 80px;
+    right: -15px;
+  }
 }
