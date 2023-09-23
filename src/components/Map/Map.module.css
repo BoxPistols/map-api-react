@@ -1,7 +1,10 @@
 .map {
   display: "block";
-  min-width: 100vh;
-  min-height: 100vh;
-  min-height: 78vh;
-  max-height: 88vh;
+  min-width: 98vh;
+  min-height: 82vh;
+  max-height: 86vh;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }/*# sourceMappingURL=Map.module.css.map */

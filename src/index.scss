@@ -51,15 +51,16 @@ button {
   }
 }
 
-h1 {
+a > h1 {
   font-size: 1.5rem;
   font-weight: 400;
+  display: block;
   // 左上
   position: absolute;
   top: 2vh;
   left: 2vw;
   line-height: 1.2;
-
+  color: #ffffffbf;
   span {
     &.logo {
       font-size: 1.5rem;
@@ -67,15 +68,14 @@ h1 {
       font-weight: 700;
     }
     &.text {
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       letter-spacing: 1px;
       padding-left: 4px;
     }
   }
   rt {
-    font-size: 10px;
-    letter-spacing: -0.8rem;
-    color: #ffffffb1;
+    font-size: 11px;
+    letter-spacing: -0.9rem;
     display: block;
   }
   @media screen and (max-width: 568px) {
