@@ -1,16 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Style from './GeoCodeResult.module.scss'
 
-// functional Component
-const GeoCodeResult = ({ address, lat, lng }) => (
-  <div>
-    <span>住所：{address}</span>
-    <br />
-    <div style={{ color: 'gray' }}>
-      <span>緯度：{lat}</span> / <span>経度：{lng}</span>
+function GeoCodeResult({ address, lat, lng }) {
+  return (
+    <div className={Style.result}>
+      <p>住所：{address}</p>
+      <p className={Style.result}>
+        緯度：{lat} / 経度：{lng}
+      </p>
     </div>
-  </div>
-)
+  )
+}
 
 GeoCodeResult.propTypes = {
   address: PropTypes.string,

@@ -1,69 +1,62 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import Style from './SearchForm.module.scss'
 
-class SearchForm extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      place: '東京タワー',
-    }
-  }
+function SearchForm({ onSubmit }) {
+  const [place, setPlace] = useState('東京タワー')
 
-  handlePlaceChange(place) {
-    this.setState({ place })
-    // tes
+  function handlePlaceChange(e) {
+    setPlace(e.target.value)
     const target = document.getElementById('clear_button')
-    if (this.state.place.length > 0) {
+    if (e.target.value.length > 0) {
       target.style.visibility = 'visible'
     }
   }
 
-  handleClear() {
-    this.setState({ place: '' })
+  function handleClear() {
+    setPlace('')
     const input = document.getElementById('input')
     input.value = ''
     const target = document.getElementById('clear_button')
     target.style.visibility = 'hidden'
   }
 
-  handleSubmit(e) {
+  function handleSubmit(e) {
     e.preventDefault()
-    if (this.state.place.length > 0) {
-      this.props.onSubmit(this.state.place)
+    if (place.length > 0) {
+      onSubmit(place)
     }
   }
 
-  render() {
-    return (
-      <>
-        <form
-          onSubmit={(e) => this.handleSubmit(e)}
-          className={Style.searchFrame}
-          name="searchForm"
-        >
-          <input
-            id="input"
-            type="text"
-            value={this.state.place}
-            onChange={(e) => this.handlePlaceChange(e.target.value)}
-            name="searchBox"
-          />
-          <div
-            id="clear_button"
-            class={Style.clearButton}
-            onClick={() => this.handleClear()}
-          ></div>
-          <button type="submit" value="検索">
-            検索
-          </button>
-        </form>
-      </>
-    )
-  }
+  return (
+    <>
+      <form
+        onSubmit={handleSubmit}
+        className={Style.searchFrame}
+        name="searchForm"
+      >
+        <input
+          id="input"
+          type="text"
+          value={place}
+          onChange={handlePlaceChange}
+          name="searchBox"
+        />
+        <button type="submit" value="検索">
+          検索
+        </button>
+        <div
+          id="clear_button"
+          className={Style.clearButton}
+          onClick={handleClear}
+        ></div>
+      </form>
+    </>
+  )
 }
 
 SearchForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 }
+
 export default SearchForm

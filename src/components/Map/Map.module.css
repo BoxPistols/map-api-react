@@ -7,16 +7,18 @@
   left: 0;
   right: 0;
   bottom: 0;
-
-  @media screen and (max-width: 768px) {
+}
+@media screen and (max-width: 768px) {
+  .map {
     min-height: 65vh;
     max-height: 78vh;
     top: 38vh;
   }
-
-  @media screen and (max-width: 568px) {
+}
+@media screen and (max-width: 568px) {
+  .map {
     min-height: 65vh;
     max-height: 78vh;
     top: 20vh;
   }
-}
+}/*# sourceMappingURL=Map.module.css.map */
