@@ -1,22 +1,17 @@
 .map {
   display: 'block';
-  min-width: 98vh;
-  min-height: 82vh;
-  max-height: 86vh;
+  min-width: 96vh;
+  min-height: 78vh;
+  max-height: 84vh;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  overflow: hidden;
 
-  // @media screen and (max-width: 768px) {
-  //   min-height: 65vh;
-  //   max-height: 78vh;
-  //   top: 38vh;
-  // }
-
-  // @media screen and (max-width: 568px) {
-  //   min-height: 65vh;
-  //   max-height: 78vh;
-  //   top: 20vh;
-  // }
+  // モバイルだともう少し高め
+  @media screen and (max-width: 568px) {
+    min-height: 72vh;
+    max-height: 88vh;
+  }
 }

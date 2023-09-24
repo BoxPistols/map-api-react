@@ -57,23 +57,24 @@ function App() {
 
   return (
     <div className="App">
-      <section className="section">
-        <a href="/">
-          <h1>
-            <ruby>
-              <span className="logo">GGMap</span>
-              <rp>(</rp>
-              <rt>ジージーマップ</rt>
-              <rp>)</rp>
-            </ruby>
-            <span className="text">緯度経度検索</span>
-            {/* ルビ文字 */}
-          </h1>
-        </a>
-      </section>
-      <section className="section">
-        <SearchForm onSubmit={handlePlaceSubmit} />
-      </section>
+      <div className="control-area">
+        <section className="section">
+          <a href="/">
+            <h1>
+              <ruby>
+                <span className="logo">GGMap</span>
+                <rp>(</rp>
+                <rt>ジージーマップ</rt>
+                <rp>)</rp>
+              </ruby>
+              <span className="text">緯度経度検索</span>
+            </h1>
+          </a>
+        </section>
+        <section className="section form-area">
+          <SearchForm onSubmit={handlePlaceSubmit} />
+        </section>
+      </div>
       <section className="section result-area">
         <GeoCodeResult
           address={state.address}
