@@ -11,12 +11,13 @@ const InnerMap = withGoogleMap((props) => (
     defaultZoom={12}
     defaultCenter={props.position}
     center={props.position}
+    onClick={props.onMapClick}
   >
     <Marker {...props.marker} />
   </GoogleMap>
 ))
 
-const Map = ({ lat, lng }) => {
+const Map = ({ lat, lng, onMapClick }) => {
   const position = { lat, lng }
   return (
     <InnerMap
@@ -33,6 +34,7 @@ const Map = ({ lat, lng }) => {
       }
       position={position}
       marker={{ position }}
+      onMapClick={onMapClick}
     />
   )
 }
@@ -40,6 +42,7 @@ const Map = ({ lat, lng }) => {
 Map.propTypes = {
   lat: PropTypes.number,
   lng: PropTypes.number,
+  onMapClick: PropTypes.func,
 }
 
 Map.defaultProps = {
