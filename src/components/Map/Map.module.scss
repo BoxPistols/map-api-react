@@ -8,10 +8,16 @@
   right: 0;
   bottom: 0;
   overflow: hidden;
+  cursor: crosshair !important;
 
   // モバイルだともう少し高め
   @media screen and (max-width: 568px) {
     min-height: 72vh;
     max-height: 88vh;
+  }
+
+  // 地図内の要素のカーソルも設定
+  * {
+    cursor: crosshair !important;
   }
 }

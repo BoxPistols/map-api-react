@@ -55,6 +55,45 @@ function App() {
       })
   }
 
+  const handleMapClick = (event) => {
+    const lat = event.latLng.lat()
+    const lng = event.latLng.lng()
+
+    // 逆ジオコーディングで住所を取得
+    axios
+      .get(GEOCODE_ENDPOINT, {
+        params: {
+          latlng: `${lat},${lng}`,
+          key: API_KEY,
+        },
+      })
+      .then((results) => {
+        const data = results.data
+        if (data.status === 'OK' && data.results[0]) {
+          setState({
+            address: data.results[0].formatted_address,
+            lat: lat,
+            lng: lng,
+          })
+        } else {
+          // 住所が見つからない場合は座標のみ表示
+          setState({
+            address: `緯度: ${lat.toFixed(6)}, 経度: ${lng.toFixed(6)}`,
+            lat: lat,
+            lng: lng,
+          })
+        }
+      })
+      .catch((err) => {
+        // エラーの場合も座標のみ表示
+        setState({
+          address: `緯度: ${lat.toFixed(6)}, 経度: ${lng.toFixed(6)}`,
+          lat: lat,
+          lng: lng,
+        })
+      })
+  }
+
   return (
     <div className="App">
       <div className="control-area">
@@ -83,7 +122,7 @@ function App() {
         />
       </section>
       <section className="section last">
-        <Map lat={state.lat} lng={state.lng} />
+        <Map lat={state.lat} lng={state.lng} onMapClick={handleMapClick} />
       </section>
     </div>
   )
