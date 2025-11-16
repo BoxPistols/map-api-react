@@ -13,11 +13,31 @@ const InnerMap = withGoogleMap((props) => (
     center={props.position}
     onClick={props.onMapClick}
   >
-    <Marker {...props.marker} />
+    {/* 通常のマーカー（検索結果） */}
+    {props.marker && props.marker.position && props.marker.position.lat && (
+      <Marker {...props.marker} />
+    )}
+    {/* ピンモードで追加されたマーカー */}
+    {props.pins &&
+      props.pins.map((pin) => (
+        <Marker
+          key={pin.id}
+          position={{ lat: pin.lat, lng: pin.lng }}
+          label={{
+            text: String(props.pins.indexOf(pin) + 1),
+            color: 'white',
+            fontSize: '12px',
+            fontWeight: 'bold',
+          }}
+          icon={{
+            url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+          }}
+        />
+      ))}
   </GoogleMap>
 ))
 
-const Map = ({ lat, lng, onMapClick }) => {
+const Map = ({ lat, lng, pins, onMapClick }) => {
   const position = { lat, lng }
   return (
     <InnerMap
@@ -34,6 +54,7 @@ const Map = ({ lat, lng, onMapClick }) => {
       }
       position={position}
       marker={{ position }}
+      pins={pins}
       onMapClick={onMapClick}
     />
   )
@@ -42,12 +63,14 @@ const Map = ({ lat, lng, onMapClick }) => {
 Map.propTypes = {
   lat: PropTypes.number,
   lng: PropTypes.number,
+  pins: PropTypes.array,
   onMapClick: PropTypes.func,
 }
 
 Map.defaultProps = {
   lat: 35.6585805,
   lng: 139.7454329,
+  pins: [],
 }
 export default GoogleApiWrapper({
   apiKey: API,
