@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import axios from 'axios'
 import './App.scss'
 import SearchForm from './components/SearchForm/SearchForm'
 import GeoCodeResult from './components/GeoCodeResult/GeoCodeResult'
 import Map from './components/Map/Map'
+import PinList from './components/PinList/PinList'
 
 const API_KEY = process.env.REACT_APP_API_KEY
 const GEOCODE_ENDPOINT = 'https://maps.googleapis.com/maps/api/geocode/json'
@@ -57,71 +58,78 @@ function App() {
       })
   }
 
-  const handleMapClick = (event) => {
-    const lat = event.latLng.lat()
-    const lng = event.latLng.lng()
+  const handleMapClick = useCallback(
+    (event) => {
+      const lat = event.latLng.lat()
+      const lng = event.latLng.lng()
 
-    // 逆ジオコーディングで住所を取得
-    axios
-      .get(GEOCODE_ENDPOINT, {
-        params: {
-          latlng: `${lat},${lng}`,
-          key: API_KEY,
-        },
-      })
-      .then((results) => {
-        const data = results.data
-        const address =
-          data.status === 'OK' && data.results[0]
-            ? data.results[0].formatted_address
-            : `緯度: ${lat.toFixed(6)}, 経度: ${lng.toFixed(6)}`
+      // 逆ジオコーディングで住所を取得
+      axios
+        .get(GEOCODE_ENDPOINT, {
+          params: {
+            latlng: `${lat},${lng}`,
+            key: API_KEY,
+          },
+        })
+        .then((results) => {
+          const data = results.data
+          const address =
+            data.status === 'OK' && data.results[0]
+              ? data.results[0].formatted_address
+              : `緯度: ${lat.toFixed(6)}, 経度: ${lng.toFixed(6)}`
 
-        if (pinMode) {
-          // ピンモード：新しいピンを追加
-          const newPin = {
-            id: Date.now(),
-            lat,
-            lng,
-            address,
+          if (pinMode) {
+            // ピンモード：新しいピンを追加
+            const newPin = {
+              id: Date.now(),
+              lat,
+              lng,
+              address,
+            }
+            setPins((prevPins) => [...prevPins, newPin])
+          } else {
+            // 通常モード：stateを更新
+            setState({
+              address,
+              lat,
+              lng,
+            })
           }
-          setPins([...pins, newPin])
-        } else {
-          // 通常モード：stateを更新
-          setState({
-            address,
-            lat,
-            lng,
-          })
-        }
-      })
-      .catch((err) => {
-        // エラーの場合も座標のみ表示
-        const address = `緯度: ${lat.toFixed(6)}, 経度: ${lng.toFixed(6)}`
-        if (pinMode) {
-          const newPin = {
-            id: Date.now(),
-            lat,
-            lng,
-            address,
+        })
+        .catch((err) => {
+          // エラーの場合も座標のみ表示
+          const address = `緯度: ${lat.toFixed(6)}, 経度: ${lng.toFixed(6)}`
+          if (pinMode) {
+            const newPin = {
+              id: Date.now(),
+              lat,
+              lng,
+              address,
+            }
+            setPins((prevPins) => [...prevPins, newPin])
+          } else {
+            setState({
+              address,
+              lat,
+              lng,
+            })
           }
-          setPins([...pins, newPin])
-        } else {
-          setState({
-            address,
-            lat,
-            lng,
-          })
-        }
-      })
-  }
+        })
+    },
+    [pinMode]
+  )
 
-  const removePin = (id) => {
-    setPins(pins.filter((pin) => pin.id !== id))
-  }
+  const removePin = useCallback((id) => {
+    setPins((prevPins) => prevPins.filter((pin) => pin.id !== id))
+  }, [])
 
-  const clearAllPins = () => {
+  const clearAllPins = useCallback(() => {
     setPins([])
-  }
+  }, [])
+
+  const togglePinMode = useCallback(() => {
+    setPinMode((prev) => !prev)
+  }, [])
 
   return (
     <div className="App">
@@ -142,17 +150,8 @@ function App() {
         <section className="section form-area">
           <SearchForm onSubmit={handlePlaceSubmit} />
           <button
-            onClick={() => setPinMode(!pinMode)}
-            className={pinMode ? 'pin-mode-btn active' : 'pin-mode-btn'}
-            style={{
-              marginLeft: '10px',
-              padding: '8px 16px',
-              cursor: 'pointer',
-              backgroundColor: pinMode ? '#4CAF50' : '#555',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-            }}
+            onClick={togglePinMode}
+            className={`pin-mode-btn ${pinMode ? 'active' : ''}`}
           >
             {pinMode ? 'ピンモード: ON' : 'ピンモード: OFF'}
           </button>
@@ -165,82 +164,11 @@ function App() {
           lng={state.lng}
         />
       </section>
-      {pins.length > 0 && (
-        <section className="section pins-area">
-          <div
-            style={{
-              backgroundColor: '#123',
-              color: '#f9f9f9dd',
-              padding: '0.8rem 1.5rem',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '10px',
-              }}
-            >
-              <h3 style={{ margin: 0 }}>ピン一覧 ({pins.length})</h3>
-              <button
-                onClick={clearAllPins}
-                style={{
-                  padding: '4px 12px',
-                  cursor: 'pointer',
-                  backgroundColor: '#d32f2f',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  fontSize: '0.85rem',
-                }}
-              >
-                全削除
-              </button>
-            </div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              {pins.map((pin, index) => (
-                <li
-                  key={pin.id}
-                  style={{
-                    marginBottom: '8px',
-                    padding: '8px',
-                    backgroundColor: '#234',
-                    borderRadius: '4px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '0.85rem', marginBottom: '4px' }}>
-                      <strong>ピン {index + 1}:</strong> {pin.address}
-                    </div>
-                    <div style={{ fontSize: '0.75rem', color: '#ccc' }}>
-                      緯度: {pin.lat.toFixed(6)}, 経度: {pin.lng.toFixed(6)}
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => removePin(pin.id)}
-                    style={{
-                      padding: '4px 8px',
-                      cursor: 'pointer',
-                      backgroundColor: '#f44336',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      fontSize: '0.75rem',
-                      marginLeft: '10px',
-                    }}
-                  >
-                    削除
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      )}
+      <PinList
+        pins={pins}
+        onRemovePin={removePin}
+        onClearAllPins={clearAllPins}
+      />
       <section className="section last">
         <Map
           lat={state.lat}

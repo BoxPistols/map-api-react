@@ -1,0 +1,127 @@
+.pinsArea {
+  margin-bottom: 0.8rem;
+}
+
+.container {
+  background-color: #123;
+  color: #f9f9f9dd;
+  padding: 0.8rem 1.5rem;
+  border-radius: 4px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.clearButton {
+  padding: 4px 12px;
+  cursor: pointer;
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #b71c1c;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.pinList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pinItem {
+  margin-bottom: 8px;
+  padding: 8px;
+  background-color: #234;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #345;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.pinInfo {
+  flex: 1;
+  min-width: 0; // テキストの省略を有効にする
+}
+
+.pinAddress {
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+  word-wrap: break-word;
+
+  strong {
+    color: #4caf50;
+  }
+}
+
+.pinCoordinates {
+  font-size: 0.75rem;
+  color: #ccc;
+  font-family: 'Courier New', monospace;
+}
+
+.removeButton {
+  padding: 4px 8px;
+  cursor: pointer;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  margin-left: 10px;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0; // ボタンが縮小しないようにする
+
+  &:hover {
+    background-color: #d32f2f;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// モバイル対応
+@media screen and (max-width: 568px) {
+  .container {
+    padding: 0.6rem 1rem;
+  }
+
+  .pinItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .removeButton {
+    margin-left: 0;
+    margin-top: 8px;
+    align-self: flex-end;
+  }
+}
