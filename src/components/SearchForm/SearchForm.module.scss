@@ -1,3 +1,35 @@
+.searchTypeSelector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 8px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #f9f9f9dd;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #4caf50;
+  }
+
+  input[type='radio'] {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+  }
+
+  span {
+    user-select: none;
+  }
+}
+
 .searchFrame {
   display: flex;
   justify-content: center;
