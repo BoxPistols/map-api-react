@@ -1,0 +1,171 @@
+.placesArea {
+  margin-bottom: 0.8rem;
+}
+
+.container {
+  background-color: #123;
+  color: #f9f9f9dd;
+  padding: 0.8rem 1.5rem;
+  border-radius: 4px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  position: sticky;
+  top: 0;
+  background-color: #123;
+  padding-bottom: 10px;
+  z-index: 1;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #4caf50;
+}
+
+.closeButton {
+  padding: 4px 12px;
+  cursor: pointer;
+  background-color: #555;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #666;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.placesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.placeItem {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #234;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+
+  &:hover {
+    background-color: #345;
+    border-left-color: #4caf50;
+    transform: translateX(2px);
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.placeInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.placeName {
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  strong {
+    color: #fff;
+  }
+}
+
+.rating {
+  font-size: 0.8rem;
+  color: #ffc107;
+  font-weight: 500;
+}
+
+.placeAddress {
+  font-size: 0.8rem;
+  color: #ccc;
+  margin-bottom: 6px;
+  word-wrap: break-word;
+}
+
+.placeTypes {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.typeTag {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  background-color: #456;
+  color: #fff;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.addButton {
+  padding: 6px 12px;
+  cursor: pointer;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 10px;
+
+  &:hover {
+    background-color: #45a049;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+}
+
+// モバイル対応
+@media screen and (max-width: 568px) {
+  .container {
+    padding: 0.6rem 1rem;
+    max-height: 300px;
+  }
+
+  .placeItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .addButton {
+    margin-left: 0;
+    margin-top: 8px;
+    align-self: flex-end;
+  }
+}

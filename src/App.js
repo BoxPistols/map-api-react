@@ -5,14 +5,18 @@ import SearchForm from './components/SearchForm/SearchForm'
 import GeoCodeResult from './components/GeoCodeResult/GeoCodeResult'
 import Map from './components/Map/Map'
 import PinList from './components/PinList/PinList'
+import PlacesResults from './components/PlacesResults/PlacesResults'
 
 const API_KEY = process.env.REACT_APP_API_KEY
 const GEOCODE_ENDPOINT = 'https://maps.googleapis.com/maps/api/geocode/json'
+const PLACES_TEXT_SEARCH_ENDPOINT =
+  'https://maps.googleapis.com/maps/api/place/textsearch/json'
 
 function App() {
   const [state, setState] = useState({})
   const [pins, setPins] = useState([])
   const [pinMode, setPinMode] = useState(false)
+  const [placesResults, setPlacesResults] = useState([])
 
   const setErrorMessage = (message) => {
     setState({
@@ -22,40 +26,79 @@ function App() {
     })
   }
 
-  const handlePlaceSubmit = (place) => {
-    axios
-      .get(GEOCODE_ENDPOINT, {
-        params: {
-          address: place,
-          key: API_KEY,
-        },
-      })
-      .then((results) => {
-        console.log(results)
-        const data = results.data
-        const result = results.data.results[0]
-        switch (data.status) {
-          case 'OK': {
-            const location = result.geometry.location
+  const handlePlaceSubmit = (place, searchType = 'geocode') => {
+    if (searchType === 'places') {
+      // Places API Text Search（自然言語検索）
+      axios
+        .get(PLACES_TEXT_SEARCH_ENDPOINT, {
+          params: {
+            query: place,
+            key: API_KEY,
+            language: 'ja',
+          },
+        })
+        .then((results) => {
+          console.log('Places API Results:', results)
+          const data = results.data
+          if (data.status === 'OK' && data.results && data.results.length > 0) {
+            setPlacesResults(data.results)
+            // 最初の結果を地図の中心に設定
+            const firstResult = data.results[0]
             setState({
-              address: result.formatted_address,
-              lat: location.lat,
-              lng: location.lng,
+              address: firstResult.formatted_address || firstResult.name,
+              lat: firstResult.geometry.location.lat,
+              lng: firstResult.geometry.location.lng,
             })
-            break
-          }
-          case 'ZERO_RESULTS': {
+          } else if (data.status === 'ZERO_RESULTS') {
+            setPlacesResults([])
             setErrorMessage('見つかりませんでした、再度検索してください')
-            break
-          }
-          default: {
+          } else {
+            setPlacesResults([])
             setErrorMessage('エラーが発生しました')
           }
-        }
-      })
-      .catch((err) => {
-        setErrorMessage('通信に失敗しました')
-      })
+        })
+        .catch((err) => {
+          console.error('Places API Error:', err)
+          setPlacesResults([])
+          setErrorMessage('通信に失敗しました')
+        })
+    } else {
+      // Geocoding API（通常の住所検索）
+      axios
+        .get(GEOCODE_ENDPOINT, {
+          params: {
+            address: place,
+            key: API_KEY,
+          },
+        })
+        .then((results) => {
+          console.log(results)
+          const data = results.data
+          const result = results.data.results[0]
+          switch (data.status) {
+            case 'OK': {
+              const location = result.geometry.location
+              setState({
+                address: result.formatted_address,
+                lat: location.lat,
+                lng: location.lng,
+              })
+              setPlacesResults([]) // 通常検索時は結果をクリア
+              break
+            }
+            case 'ZERO_RESULTS': {
+              setErrorMessage('見つかりませんでした、再度検索してください')
+              break
+            }
+            default: {
+              setErrorMessage('エラーが発生しました')
+            }
+          }
+        })
+        .catch((err) => {
+          setErrorMessage('通信に失敗しました')
+        })
+    }
   }
 
   const handleMapClick = useCallback(
@@ -131,6 +174,20 @@ function App() {
     setPinMode((prev) => !prev)
   }, [])
 
+  const handleAddPinFromPlace = useCallback((pin) => {
+    const newPin = {
+      id: Date.now(),
+      lat: pin.lat,
+      lng: pin.lng,
+      address: pin.address,
+    }
+    setPins((prevPins) => [...prevPins, newPin])
+  }, [])
+
+  const handleClosePlacesResults = useCallback(() => {
+    setPlacesResults([])
+  }, [])
+
   return (
     <div className="App">
       <div className="control-area">
@@ -164,6 +221,11 @@ function App() {
           lng={state.lng}
         />
       </section>
+      <PlacesResults
+        places={placesResults}
+        onAddPin={handleAddPinFromPlace}
+        onClose={handleClosePlacesResults}
+      />
       <PinList
         pins={pins}
         onRemovePin={removePin}

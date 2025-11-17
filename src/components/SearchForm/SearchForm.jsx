@@ -4,6 +4,7 @@ import Style from './SearchForm.module.scss'
 
 function SearchForm({ onSubmit }) {
   const [place, setPlace] = useState('東京タワー')
+  const [searchType, setSearchType] = useState('geocode')
 
   function handlePlaceChange(e) {
     setPlace(e.target.value)
@@ -24,12 +25,36 @@ function SearchForm({ onSubmit }) {
   function handleSubmit(e) {
     e.preventDefault()
     if (place.length > 0) {
-      onSubmit(place)
+      onSubmit(place, searchType)
     }
+  }
+
+  function handleSearchTypeChange(e) {
+    setSearchType(e.target.value)
   }
 
   return (
     <>
+      <div className={Style.searchTypeSelector}>
+        <label className={Style.radioLabel}>
+          <input
+            type="radio"
+            value="geocode"
+            checked={searchType === 'geocode'}
+            onChange={handleSearchTypeChange}
+          />
+          <span>住所検索</span>
+        </label>
+        <label className={Style.radioLabel}>
+          <input
+            type="radio"
+            value="places"
+            checked={searchType === 'places'}
+            onChange={handleSearchTypeChange}
+          />
+          <span>場所検索</span>
+        </label>
+      </div>
       <form
         onSubmit={handleSubmit}
         className={Style.searchFrame}
@@ -41,6 +66,11 @@ function SearchForm({ onSubmit }) {
           value={place}
           onChange={handlePlaceChange}
           name="searchBox"
+          placeholder={
+            searchType === 'places'
+              ? '例: 東京タワーの近くのカフェ'
+              : '例: 東京タワー'
+          }
         />
         <button type="submit" value="検索">
           検索
