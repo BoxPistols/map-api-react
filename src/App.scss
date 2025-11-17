@@ -64,35 +64,6 @@ a {
   padding: 0.8rem 1.5rem;
 }
 
-// Gogle Map API
-.gmnoprint.gm-bundled-control.gm-bundled-control-on-bottom {
-  margin-bottom: 40px !important;
-  margin-right: 40px !important;
-}
-
-button.gm-control-active,
-button.gm-svpc {
-  width: fit-content !important;
-  height: auto !important;
-  padding: 0.25rem 0.5rem !important;
-  border-radius: 0.25rem !important;
-  // background: none !important;
-  margin: auto !important;
-  max-height: 75px !important;
-
-  // 入れ子の画像を中央に
-  > img {
-    margin: auto !important;
-    transform: translate(-255%, -65%);
-    max-height: 75px !important;
-  }
-  img {
-    margin: auto !important;
-    max-width: 80px;
-    right: -15px;
-  }
-}
-
 .form-area {
   display: flex;
   // 右上
