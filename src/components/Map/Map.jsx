@@ -19,18 +19,18 @@ const InnerMap = withGoogleMap((props) => (
     )}
     {/* ピンモードで追加されたマーカー */}
     {props.pins &&
-      props.pins.map((pin) => (
+      props.pins.map((pin, index) => (
         <Marker
           key={pin.id}
           position={{ lat: pin.lat, lng: pin.lng }}
           label={{
-            text: String(props.pins.indexOf(pin) + 1),
+            text: String(index + 1),
             color: 'white',
             fontSize: '12px',
             fontWeight: 'bold',
           }}
           icon={{
-            url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+            url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
           }}
         />
       ))}
