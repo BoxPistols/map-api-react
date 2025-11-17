@@ -8,9 +8,14 @@ const PlacesResults = React.memo(({ places, onAddPin, onClose }) => {
   }
 
   const handleAddPin = (place) => {
+    const location = place.geometry.location
+    // LatLngオブジェクトの場合はメソッドを呼び出す、そうでなければプロパティにアクセス
+    const lat = typeof location.lat === 'function' ? location.lat() : location.lat
+    const lng = typeof location.lng === 'function' ? location.lng() : location.lng
+
     const pin = {
-      lat: place.geometry.location.lat,
-      lng: place.geometry.location.lng,
+      lat,
+      lng,
       address: place.formatted_address || place.name,
       name: place.name,
     }
@@ -116,10 +121,13 @@ PlacesResults.propTypes = {
       formatted_address: PropTypes.string,
       vicinity: PropTypes.string,
       geometry: PropTypes.shape({
-        location: PropTypes.shape({
-          lat: PropTypes.number.isRequired,
-          lng: PropTypes.number.isRequired,
-        }).isRequired,
+        location: PropTypes.oneOfType([
+          PropTypes.shape({
+            lat: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
+            lng: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
+          }),
+          PropTypes.object, // google.maps.LatLng object
+        ]).isRequired,
       }).isRequired,
       rating: PropTypes.number,
       types: PropTypes.arrayOf(PropTypes.string),

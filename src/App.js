@@ -9,8 +9,6 @@ import PlacesResults from './components/PlacesResults/PlacesResults'
 
 const API_KEY = process.env.REACT_APP_API_KEY
 const GEOCODE_ENDPOINT = 'https://maps.googleapis.com/maps/api/geocode/json'
-const PLACES_TEXT_SEARCH_ENDPOINT =
-  'https://maps.googleapis.com/maps/api/place/textsearch/json'
 
 function App() {
   const [state, setState] = useState({})
@@ -29,27 +27,29 @@ function App() {
   const handlePlaceSubmit = (place, searchType = 'geocode') => {
     if (searchType === 'places') {
       // Places API Text Search（自然言語検索）
-      axios
-        .get(PLACES_TEXT_SEARCH_ENDPOINT, {
-          params: {
-            query: place,
-            key: API_KEY,
-            language: 'ja',
-          },
-        })
-        .then((results) => {
-          console.log('Places API Results:', results)
-          const data = results.data
-          if (data.status === 'OK' && data.results && data.results.length > 0) {
-            setPlacesResults(data.results)
+      // google.maps.places.PlacesServiceを使用（CORS回避）
+      if (window.google && window.google.maps && window.google.maps.places) {
+        const service = new window.google.maps.places.PlacesService(
+          document.createElement('div')
+        )
+
+        const request = {
+          query: place,
+          language: 'ja',
+        }
+
+        service.textSearch(request, (results, status) => {
+          console.log('Places API Results:', results, status)
+          if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+            setPlacesResults(results)
             // 最初の結果を地図の中心に設定
-            const firstResult = data.results[0]
+            const firstResult = results[0]
             setState({
               address: firstResult.formatted_address || firstResult.name,
-              lat: firstResult.geometry.location.lat,
-              lng: firstResult.geometry.location.lng,
+              lat: firstResult.geometry.location.lat(),
+              lng: firstResult.geometry.location.lng(),
             })
-          } else if (data.status === 'ZERO_RESULTS') {
+          } else if (status === window.google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
             setPlacesResults([])
             setErrorMessage('見つかりませんでした、再度検索してください')
           } else {
@@ -57,11 +57,10 @@ function App() {
             setErrorMessage('エラーが発生しました')
           }
         })
-        .catch((err) => {
-          console.error('Places API Error:', err)
-          setPlacesResults([])
-          setErrorMessage('通信に失敗しました')
-        })
+      } else {
+        setPlacesResults([])
+        setErrorMessage('Places APIの読み込みに失敗しました')
+      }
     } else {
       // Geocoding API（通常の住所検索）
       axios
