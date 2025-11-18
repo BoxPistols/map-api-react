@@ -9,13 +9,14 @@ const API = process.env.REACT_APP_API_KEY
 const InnerMap = withGoogleMap((props) => (
   <GoogleMap
     defaultZoom={12}
+    zoom={props.zoom}
     defaultCenter={props.position}
     center={props.position}
     onClick={props.onMapClick}
   >
-    {/* 通常のマーカー（検索結果） */}
+    {/* 中心位置（通常マーカー） */}
     {props.marker && props.marker.position && props.marker.position.lat && (
-      <Marker {...props.marker} />
+      <Marker position={props.marker.position} />
     )}
     {/* ピンモードで追加されたマーカー */}
     {props.pins &&
@@ -37,7 +38,7 @@ const InnerMap = withGoogleMap((props) => (
   </GoogleMap>
 ))
 
-const Map = ({ lat, lng, pins, onMapClick }) => {
+const Map = ({ lat, lng, zoom, pins, onMapClick }) => {
   const position = { lat, lng }
   return (
     <InnerMap
@@ -54,6 +55,7 @@ const Map = ({ lat, lng, pins, onMapClick }) => {
       }
       position={position}
       marker={{ position }}
+      zoom={zoom}
       pins={pins}
       onMapClick={onMapClick}
     />
@@ -63,6 +65,7 @@ const Map = ({ lat, lng, pins, onMapClick }) => {
 Map.propTypes = {
   lat: PropTypes.number,
   lng: PropTypes.number,
+  zoom: PropTypes.number,
   pins: PropTypes.array,
   onMapClick: PropTypes.func,
 }
@@ -70,8 +73,10 @@ Map.propTypes = {
 Map.defaultProps = {
   lat: 35.6585805,
   lng: 139.7454329,
+  zoom: 12,
   pins: [],
 }
 export default GoogleApiWrapper({
   apiKey: API,
+  libraries: ['places', 'marker'],
 })(Map)

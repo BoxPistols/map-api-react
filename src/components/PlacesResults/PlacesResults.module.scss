@@ -89,14 +89,14 @@
 }
 
 .closeButton {
-  padding: 6px 14px;
+  padding: 3px 7px;
   cursor: pointer;
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  font-size: 0.9rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
   font-weight: 600;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -196,17 +196,17 @@
 }
 
 .addButton {
-  padding: 8px 16px;
+  padding: 4px 8px;
   cursor: pointer;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  border-radius: 10px;
-  font-size: 0.9rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
   font-weight: 700;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
-  margin-left: 12px;
+  margin-left: 8px;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
   letter-spacing: 0.3px;
 

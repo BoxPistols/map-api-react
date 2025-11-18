@@ -1,8 +1,8 @@
 .searchContainer {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 12px 16px;
+  gap: 10px;
+  padding: 10px 12px;
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
   border-radius: 12px;
@@ -18,7 +18,8 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
+  flex-wrap: wrap;
   padding: 0;
 
   @media screen and (max-width: 480px) {
@@ -29,37 +30,58 @@
 .radioLabel {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.85rem; // ≒13.6px
   color: rgba(255, 255, 255, 0.95);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 6px 12px;
-  border-radius: 8px;
+  padding: 0;
+  border-radius: 9999px;
   font-weight: 500;
+  position: relative;
 
   @media screen and (max-width: 480px) {
-    font-size: 0.8rem;
-    padding: 4px 8px;
-    gap: 6px;
+    font-size: 0.8rem; // 12.8px
+    gap: 0;
   }
 
   &:hover {
     color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.15);
-    transform: translateX(2px);
   }
 
   input[type='radio'] {
-    cursor: pointer;
-    width: 18px;
-    height: 18px;
-    accent-color: #667eea;
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
   }
 
   span {
     user-select: none;
     font-weight: 600;
+    display: inline-block;
+    padding: 6px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  input[type='radio']:checked + span {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+  }
+
+  input[type='radio']:focus + span,
+  input[type='radio']:focus-visible + span {
+    outline: 2px solid rgba(255, 255, 255, 0.7);
+    outline-offset: 2px;
   }
 }
 
@@ -69,6 +91,7 @@
   align-items: center;
   position: relative;
   gap: 8px;
+  width: 100%;
 }
 
 form {
@@ -81,15 +104,15 @@ form {
 
 .inputWrapper {
   position: relative;
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
 }
 
 input {
-  min-width: 180px;
+  min-width: 240px;
   width: 100%;
-  max-width: 400px;
+  max-width: none;
   height: 44px;
   font-size: 1rem;
   padding: 0.6rem 3rem 0.6rem 1.2rem;
@@ -102,17 +125,9 @@ input {
   font-weight: 500;
 
   @media screen and (max-width: 480px) {
-    min-width: 150px;
+    min-width: 160px;
     font-size: 0.9rem;
     padding: 0.5rem 2.5rem 0.5rem 1rem;
-  }
-
-  @media screen and (min-width: 768px) {
-    min-width: 300px;
-  }
-
-  @media screen and (min-width: 1024px) {
-    min-width: 400px;
   }
 
   &:focus {
@@ -132,29 +147,29 @@ input {
 }
 
 button {
-  height: 44px;
-  min-width: 80px;
-  padding: 0.6rem 1.5rem;
+  height: 24px;
+  min-width: 56px;
+  padding: 0.3rem 0.75rem;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #2563eb; // 単色
   color: #fff;
-  font-size: 0.95rem;
+  font-size: 0.75rem;
   font-weight: 700;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 15px 0 rgba(102, 126, 234, 0.4);
   letter-spacing: 0.3px;
 
   @media screen and (max-width: 480px) {
-    height: 40px;
-    min-width: 70px;
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
+    height: 22px;
+    min-width: 48px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
   }
 
   &:hover {
-    background: linear-gradient(135deg, #5568d3 0%, #6a3d91 100%);
+    background: #1d4ed8;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px 0 rgba(102, 126, 234, 0.5);
   }
@@ -175,8 +190,8 @@ button {
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
@@ -199,7 +214,7 @@ button {
   &:after {
     content: '×';
     color: rgba(255, 255, 255, 0.9);
-    font-size: 1.6rem;
+    font-size: 1.1rem;
     line-height: 1;
     font-weight: 300;
   }

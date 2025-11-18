@@ -148,14 +148,14 @@ a {
 
 // ピンモードボタン
 .pin-mode-btn {
-  padding: 10px 20px;
+  padding: 5px 10px;
   cursor: pointer;
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  font-size: 0.95rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
   font-weight: 600;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
@@ -189,8 +189,8 @@ a {
   }
 
   @media screen and (max-width: 568px) {
-    padding: 8px 16px;
-    font-size: 0.9rem;
+    padding: 6px 10px;
+    font-size: 0.75rem;
   }
 }
 
@@ -221,13 +221,13 @@ a {
   bottom: 20px;
   right: 20px;
   z-index: 999;
-  padding: 12px 24px;
+  padding: 6px 12px;
   cursor: pointer;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  border-radius: 24px;
-  font-size: 0.95rem;
+  border-radius: 16px;
+  font-size: 0.75rem;
   font-weight: 700;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow:
