@@ -3,74 +3,103 @@
   left: 0;
   top: 0;
   bottom: 0;
-  width: 400px;
+  width: 420px;
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  background-color: #123;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+  background: rgba(102, 126, 234, 0.15);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 4px 0 24px rgba(31, 38, 135, 0.4);
   overflow: hidden;
 
   @media screen and (max-width: 1024px) {
-    width: 320px;
+    width: 340px;
   }
 
   @media screen and (max-width: 768px) {
     width: 100%;
     height: 50vh;
     top: auto;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
+    border-right: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 -4px 24px rgba(31, 38, 135, 0.4);
   }
 }
 
 .container {
-  background-color: #123;
-  color: #f9f9f9dd;
-  padding: 1rem 1.5rem;
+  background: transparent;
+  color: #ffffff;
+  padding: 1.5rem;
   height: 100%;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
   position: sticky;
   top: 0;
-  background-color: #123;
-  padding-bottom: 10px;
-  z-index: 1;
+  background: rgba(102, 126, 234, 0.2);
+  backdrop-filter: blur(20px);
+  padding: 12px 16px;
+  margin: -1.5rem -1.5rem 16px -1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  z-index: 2;
 }
 
 .title {
   margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #4caf50;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.3px;
 }
 
 .closeButton {
-  padding: 4px 12px;
+  padding: 6px 14px;
   cursor: pointer;
-  background-color: #555;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
   color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    background-color: #666;
+    background: rgba(255, 255, 255, 0.25);
     transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 
   &:active {
     transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   }
 }
 
@@ -80,27 +109,28 @@
   margin: 0;
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .placeItem {
-  margin-bottom: 10px;
-  padding: 10px;
-  background-color: #234;
-  border-radius: 4px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.2s ease;
-  border-left: 3px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    background-color: #345;
-    border-left-color: #4caf50;
-    transform: translateX(2px);
-  }
-
-  &:last-child {
-    margin-bottom: 0;
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
   }
 }
 
@@ -110,75 +140,83 @@
 }
 
 .placeName {
-  font-size: 0.95rem;
-  margin-bottom: 4px;
+  font-size: 1rem;
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 
   strong {
-    color: #fff;
+    color: #ffffff;
+    font-weight: 700;
   }
 }
 
 .rating {
-  font-size: 0.8rem;
-  color: #ffc107;
-  font-weight: 500;
+  font-size: 0.85rem;
+  color: #ffd700;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .placeAddress {
-  font-size: 0.8rem;
-  color: #ccc;
-  margin-bottom: 6px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 8px;
   word-wrap: break-word;
+  line-height: 1.4;
 }
 
 .placeTypes {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .typeTag {
-  font-size: 0.7rem;
-  padding: 2px 6px;
-  background-color: #456;
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(5px);
   color: #fff;
-  border-radius: 3px;
+  border-radius: 6px;
   white-space: nowrap;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .addButton {
-  padding: 6px 12px;
+  padding: 8px 16px;
   cursor: pointer;
-  background-color: #4caf50;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
-  margin-left: 10px;
+  margin-left: 12px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  letter-spacing: 0.3px;
 
   &:hover {
-    background-color: #45a049;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #5568d3 0%, #6a3d91 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
   }
 
   &:active {
     transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
   }
 }
 
 // モバイル対応
 @media screen and (max-width: 768px) {
   .container {
-    padding: 0.8rem 1rem;
+    padding: 1rem;
   }
 
   .placeItem {
@@ -188,7 +226,7 @@
 
   .addButton {
     margin-left: 0;
-    margin-top: 8px;
-    align-self: flex-end;
+    margin-top: 12px;
+    width: 100%;
   }
 }
