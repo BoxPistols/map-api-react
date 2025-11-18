@@ -87,7 +87,7 @@ a {
   flex-wrap: wrap;
 
   @media screen and (max-width: 768px) {
-    justify-content: stretch;
+    justify-content: space-between;
     width: 100%;
   }
 }

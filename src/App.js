@@ -195,7 +195,7 @@ function App() {
   // Fキーで全画面表示切り替え、ESCで全画面解除
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === 'f' || event.key === 'F') {
+      if (event.key.toLowerCase() === 'f') {
         event.preventDefault()
         setIsFullscreen((prev) => !prev)
       } else if (event.key === 'Escape' && isFullscreen) {
