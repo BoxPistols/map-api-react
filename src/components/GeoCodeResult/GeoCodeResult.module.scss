@@ -1,5 +1,17 @@
 .result {
   .coordinates {
-    color: gray;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+  }
+
+  @media screen and (max-width: 480px) {
+    font-size: 0.85rem;
+
+    .coordinates {
+      font-size: 0.8rem;
+    }
   }
 }

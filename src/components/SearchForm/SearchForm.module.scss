@@ -7,6 +7,11 @@
   backdrop-filter: blur(10px);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.15);
+
+  @media screen and (max-width: 480px) {
+    padding: 8px 12px;
+    gap: 10px;
+  }
 }
 
 .searchTypeSelector {
@@ -15,6 +20,10 @@
   align-items: center;
   gap: 16px;
   padding: 0;
+
+  @media screen and (max-width: 480px) {
+    gap: 8px;
+  }
 }
 
 .radioLabel {
@@ -28,6 +37,12 @@
   padding: 6px 12px;
   border-radius: 8px;
   font-weight: 500;
+
+  @media screen and (max-width: 480px) {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    gap: 6px;
+  }
 
   &:hover {
     color: #ffffff;
@@ -72,7 +87,7 @@ form {
 }
 
 input {
-  min-width: 240px;
+  min-width: 180px;
   width: 100%;
   max-width: 400px;
   height: 44px;
@@ -86,8 +101,14 @@ input {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 500;
 
+  @media screen and (max-width: 480px) {
+    min-width: 150px;
+    font-size: 0.9rem;
+    padding: 0.5rem 2.5rem 0.5rem 1rem;
+  }
+
   @media screen and (min-width: 768px) {
-    min-width: 360px;
+    min-width: 300px;
   }
 
   @media screen and (min-width: 1024px) {
@@ -124,6 +145,13 @@ button {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 15px 0 rgba(102, 126, 234, 0.4);
   letter-spacing: 0.3px;
+
+  @media screen and (max-width: 480px) {
+    height: 40px;
+    min-width: 70px;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
 
   &:hover {
     background: linear-gradient(135deg, #5568d3 0%, #6a3d91 100%);

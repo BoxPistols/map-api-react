@@ -20,6 +20,7 @@ function App() {
   const [pinMode, setPinMode] = useState(false)
   const [placesResults, setPlacesResults] = useState([])
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
   const setErrorMessage = (message) => {
     setState({
@@ -47,6 +48,7 @@ function App() {
           console.log('Places API Results:', results, status)
           if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
             setPlacesResults(results)
+            setIsDrawerOpen(true) // モバイルでドロワーを自動的に開く
             // 最初の結果を地図の中心に設定
             const firstResult = results[0]
             setState({
@@ -192,6 +194,10 @@ function App() {
     setPlacesResults([])
   }, [])
 
+  const toggleDrawer = useCallback(() => {
+    setIsDrawerOpen((prev) => !prev)
+  }, [])
+
   // Fキーで全画面表示切り替え、ESCで全画面解除
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -242,11 +248,18 @@ function App() {
           lng={state.lng}
         />
       </section>
+      {/* モバイル用ドロワートグルボタン */}
+      {placesResults.length > 0 && !isFullscreen && (
+        <button className="drawer-toggle-btn" onClick={toggleDrawer}>
+          {isDrawerOpen ? '閉じる' : `検索結果 (${placesResults.length})`}
+        </button>
+      )}
       <div className={isFullscreen ? 'hidden' : ''}>
         <PlacesResults
           places={placesResults}
           onAddPin={handleAddPinFromPlace}
           onClose={handleClosePlacesResults}
+          isDrawerOpen={isDrawerOpen}
         />
         <PinList
           pins={pins}

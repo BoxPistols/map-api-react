@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Style from './PlacesResults.module.scss'
 
-const PlacesResults = React.memo(({ places, onAddPin, onClose }) => {
+const PlacesResults = React.memo(({ places, onAddPin, onClose, isDrawerOpen }) => {
   if (!places || places.length === 0) {
     return null
   }
@@ -23,7 +23,7 @@ const PlacesResults = React.memo(({ places, onAddPin, onClose }) => {
   }
 
   return (
-    <section className={`section ${Style.placesArea}`}>
+    <section className={`section ${Style.placesArea} ${isDrawerOpen ? Style.open : ''}`}>
       <div className={Style.container}>
         <div className={Style.header}>
           <h3 className={Style.title}>検索結果 ({places.length}件)</h3>
@@ -135,6 +135,7 @@ PlacesResults.propTypes = {
   ),
   onAddPin: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
+  isDrawerOpen: PropTypes.bool,
 }
 
 export default PlacesResults
