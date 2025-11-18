@@ -10,15 +10,21 @@ a {
 
   .control-area {
     display: flex;
-    // 両端揃え
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    flex: column;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 12px;
     position: sticky;
     top: 0;
     z-index: 1;
+    padding: 8px 0;
+
+    @media screen and (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
   }
 
   a h1 {
@@ -52,6 +58,10 @@ a {
 
   .section {
     margin-bottom: 0.8rem;
+
+    .control-area & {
+      margin-bottom: 0;
+    }
   }
 }
 
@@ -66,10 +76,14 @@ a {
 
 .form-area {
   display: flex;
-  // 右上
   justify-content: flex-end;
   align-items: center;
   gap: 10px;
+
+  @media screen and (max-width: 768px) {
+    justify-content: stretch;
+    flex-wrap: wrap;
+  }
 }
 
 // ピンモードボタン
