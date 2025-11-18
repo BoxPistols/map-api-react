@@ -18,10 +18,33 @@
 - バージョン管理、ブランチ管理、コミット履歴の確認などをサポート
 - Git コマンドを効率的に実行
 
-#### 3. **Brave Search MCP**
+#### 3. **Brave Search MCP** (オプション)
 - Web 検索機能を提供
 - Google Maps API のドキュメント検索などに活用
 - 環境変数 `BRAVE_API_KEY` が必要（オプション）
+
+#### 4. **Fetch MCP** ⭐ Google Maps API 連携に最適
+- HTTP リクエストを実行
+- **Google Maps Geocoding API、Places API のテスト**に活用
+- APIレスポンスの確認とデバッグ
+- CORS の問題を回避してAPIをテスト可能
+
+#### 5. **Memory MCP**
+- セッション間でコンテキストを永続化
+- 重要な情報（API設定、プロジェクト構造など）を記憶
+- 開発中の ToDo や注意事項を保持
+
+#### 6. **Puppeteer MCP** ⭐ フロントエンド開発に最適
+- ブラウザ自動化
+- **開発サーバーの動作確認**
+- **マップUIのスクリーンショット取得**
+- E2Eテストのシナリオ作成
+- レスポンシブデザインのテスト
+
+#### 7. **Sequential Thinking MCP**
+- 複雑な問題解決を段階的に実行
+- アーキテクチャ設計の支援
+- 複雑なバグの原因究明
 
 ### MCP サーバーの使用方法
 
@@ -84,6 +107,24 @@ export BRAVE_API_KEY="your_api_key_here"
 - ブランチ管理
 - コミットメッセージの規約
 
+#### 7. **api-testing** - API テスト ⭐ NEW
+```
+/api-testing
+```
+- Fetch MCP を使用した Google Maps API のテスト
+- Geocoding API、Places API のリクエスト・レスポンス確認
+- API エラーのデバッグ
+- CORS 問題の回避
+
+#### 8. **ui-testing** - UI テスト ⭐ NEW
+```
+/ui-testing
+```
+- Puppeteer MCP を使用した UI 自動テスト
+- スクリーンショット取得（マップ、ヘッダー、サイドバー）
+- レスポンシブデザインのテスト（モバイル、タブレット、デスクトップ）
+- E2E テストシナリオの実行
+
 ### スキルの使い方
 
 Claude Code のチャットで、スキル名を `/` から始めて入力するだけです：
@@ -110,7 +151,9 @@ Claude Code のチャットで、スキル名を `/` から始めて入力する
     ├── test-runner.md
     ├── component-generator.md
     ├── google-maps-integration.md
-    └── git-workflow.md
+    ├── git-workflow.md
+    ├── api-testing.md     # ⭐ NEW - Fetch MCP を使用したAPI テスト
+    └── ui-testing.md      # ⭐ NEW - Puppeteer MCP を使用したUI テスト
 ```
 
 ## カスタマイズ
