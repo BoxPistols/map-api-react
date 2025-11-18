@@ -11,7 +11,11 @@ const API_KEY = process.env.REACT_APP_API_KEY
 const GEOCODE_ENDPOINT = 'https://maps.googleapis.com/maps/api/geocode/json'
 
 function App() {
-  const [state, setState] = useState({})
+  const [state, setState] = useState({
+    address: '東京タワー',
+    lat: 35.6585805,
+    lng: 139.7454329,
+  })
   const [pins, setPins] = useState([])
   const [pinMode, setPinMode] = useState(false)
   const [placesResults, setPlacesResults] = useState([])
