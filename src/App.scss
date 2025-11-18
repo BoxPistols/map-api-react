@@ -2,11 +2,16 @@ a {
   text-decoration: none;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .App {
   background-color: #234;
   padding: 8px;
   margin: auto;
   overflow: hidden;
+  position: relative;
 
   .control-area {
     display: flex;
@@ -121,5 +126,22 @@ a {
   @media screen and (max-width: 568px) {
     padding: 6px 12px;
     font-size: 0.85rem;
+  }
+}
+
+// マップコンテナ
+.map-container {
+  position: relative;
+  transition: all 0.3s ease;
+
+  &.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    margin: 0;
+    padding: 0;
   }
 }

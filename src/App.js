@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import axios from 'axios'
 import './App.scss'
 import SearchForm from './components/SearchForm/SearchForm'
@@ -19,6 +19,7 @@ function App() {
   const [pins, setPins] = useState([])
   const [pinMode, setPinMode] = useState(false)
   const [placesResults, setPlacesResults] = useState([])
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   const setErrorMessage = (message) => {
     setState({
@@ -191,9 +192,26 @@ function App() {
     setPlacesResults([])
   }, [])
 
+  // Fキーで全画面表示切り替え、ESCで全画面解除
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'f' || event.key === 'F') {
+        event.preventDefault()
+        setIsFullscreen((prev) => !prev)
+      } else if (event.key === 'Escape' && isFullscreen) {
+        setIsFullscreen(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isFullscreen])
+
   return (
     <div className="App">
-      <div className="control-area">
+      <div className={`control-area ${isFullscreen ? 'hidden' : ''}`}>
         <section className="section">
           <a href="/">
             <h1>
@@ -217,24 +235,26 @@ function App() {
           </button>
         </section>
       </div>
-      <section className="section result-area">
+      <section className={`section result-area ${isFullscreen ? 'hidden' : ''}`}>
         <GeoCodeResult
           address={state.address}
           lat={state.lat}
           lng={state.lng}
         />
       </section>
-      <PlacesResults
-        places={placesResults}
-        onAddPin={handleAddPinFromPlace}
-        onClose={handleClosePlacesResults}
-      />
-      <PinList
-        pins={pins}
-        onRemovePin={removePin}
-        onClearAllPins={clearAllPins}
-      />
-      <section className="section last">
+      <div className={isFullscreen ? 'hidden' : ''}>
+        <PlacesResults
+          places={placesResults}
+          onAddPin={handleAddPinFromPlace}
+          onClose={handleClosePlacesResults}
+        />
+        <PinList
+          pins={pins}
+          onRemovePin={removePin}
+          onClearAllPins={clearAllPins}
+        />
+      </div>
+      <section className={`section last map-container ${isFullscreen ? 'fullscreen' : ''}`}>
         <Map
           lat={state.lat}
           lng={state.lng}
