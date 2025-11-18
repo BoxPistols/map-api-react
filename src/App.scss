@@ -7,11 +7,25 @@ a {
 }
 
 .App {
-  background-color: #234;
-  padding: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 16px;
   margin: auto;
   overflow: hidden;
   position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+      radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(250, 128, 114, 0.3), transparent 50%);
+    pointer-events: none;
+  }
 
   .control-area {
     display: flex;
@@ -19,50 +33,69 @@ a {
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 16px;
     position: sticky;
     top: 0;
-    z-index: 1;
-    padding: 8px 0;
+    z-index: 100;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow:
+      0 8px 32px 0 rgba(31, 38, 135, 0.37),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+    margin-bottom: 16px;
 
     @media screen and (max-width: 768px) {
       flex-direction: column;
       align-items: stretch;
-      gap: 8px;
+      gap: 12px;
+      padding: 12px 16px;
     }
   }
 
   a h1 {
-    font-size: 1.35rem;
-    font-weight: 400;
+    font-size: 1.5rem;
+    font-weight: 700;
     display: block;
     padding-left: 8px;
     line-height: 1.2;
-    color: #ffffffbf;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    letter-spacing: -0.5px;
+
     span {
       &.logo {
-        font-size: 1.5rem;
-        font-family: 'Roboto Condensed', sans-serif;
-        font-weight: 700;
+        font-size: 1.75rem;
+        font-family: 'Roboto Condensed', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-weight: 800;
+        background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
       &.text {
-        font-size: 0.85rem;
-        letter-spacing: 1px;
-        padding-left: 4px;
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+        padding-left: 6px;
+        opacity: 0.95;
       }
     }
     rt {
       font-size: 11px;
       letter-spacing: -0.9rem;
       display: block;
+      opacity: 0.8;
     }
     @media screen and (max-width: 568px) {
-      font-size: 1rem;
+      font-size: 1.2rem;
     }
   }
 
   .section {
-    margin-bottom: 0.8rem;
+    margin-bottom: 16px;
 
     .control-area & {
       margin-bottom: 0;
@@ -71,19 +104,30 @@ a {
 }
 
 .result-area {
-  background-color: #123;
-  color: #f9f9f9dd;
-  font-size: 0.9rem;
-  margin: auto;
-  line-height: 1.75;
-  padding: 0.8rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 0.95rem;
+  margin: 0 0 16px 0;
+  line-height: 1.8;
+  padding: 16px 24px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.35);
+  }
 }
 
 .form-area {
   display: flex;
   justify-content: flex-end;
   align-items: flex-start;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
 
   @media screen and (max-width: 768px) {
@@ -94,46 +138,59 @@ a {
 
 // ピンモードボタン
 .pin-mode-btn {
-  padding: 8px 16px;
+  padding: 10px 20px;
   cursor: pointer;
-  background-color: #555;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
   color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
+  box-shadow: 0 4px 15px 0 rgba(31, 38, 135, 0.2);
 
   &:hover {
-    background-color: #666;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px 0 rgba(31, 38, 135, 0.3);
+    border-color: rgba(255, 255, 255, 0.4);
   }
 
   &:active {
     transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 10px 0 rgba(31, 38, 135, 0.2);
   }
 
   &.active {
-    background-color: #4caf50;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow:
+      0 4px 15px 0 rgba(102, 126, 234, 0.4),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
 
     &:hover {
-      background-color: #45a049;
+      background: linear-gradient(135deg, #5568d3 0%, #6a3d91 100%);
+      box-shadow:
+        0 6px 20px 0 rgba(102, 126, 234, 0.5),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
     }
   }
 
   @media screen and (max-width: 568px) {
-    padding: 6px 12px;
-    font-size: 0.85rem;
+    padding: 8px 16px;
+    font-size: 0.9rem;
   }
 }
 
 // マップコンテナ
 .map-container {
   position: relative;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 
   &.fullscreen {
     position: fixed;
@@ -144,5 +201,6 @@ a {
     z-index: 9999;
     margin: 0;
     padding: 0;
+    border-radius: 0;
   }
 }
