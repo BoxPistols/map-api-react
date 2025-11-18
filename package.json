@@ -10,6 +10,7 @@
     "dotenv": "^8.2.0",
     "dotenv-webpack": "^3.0.0",
     "google-maps-react": "^2.0.6",
+    "prop-types": "^15.8.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-google-maps": "^9.4.5",
@@ -18,7 +19,7 @@
     "sass": "^1.26.11"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
     "build": "NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
