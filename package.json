@@ -25,6 +25,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  },
   "eslintConfig": {
     "extends": "react-app"
   },
