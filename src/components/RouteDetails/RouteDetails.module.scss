@@ -1,0 +1,231 @@
+.routeDetails {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.clearButton {
+  padding: 6px 12px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #d32f2f;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background-color: #e3f2fd;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.summaryItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.label {
+  color: #555;
+  font-weight: 500;
+}
+
+.value {
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.legsContainer {
+  margin-bottom: 16px;
+}
+
+.subtitle {
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.legs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 8px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+
+    &:hover {
+      background: #555;
+    }
+  }
+}
+
+.leg {
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-left: 3px solid #4285f4;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #f0f0f0;
+    transform: translateX(2px);
+  }
+}
+
+.legHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.legNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: #4285f4;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.legRoute {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.legStart,
+.legEnd {
+  color: #333;
+  line-height: 1.4;
+}
+
+.arrow {
+  color: #4285f4;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 2px 0;
+}
+
+.legInfo {
+  display: flex;
+  gap: 16px;
+  font-size: 0.85rem;
+  color: #666;
+  padding-left: 32px;
+}
+
+.legDistance,
+.legDuration {
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.exportButton {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #45a049;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@media screen and (max-width: 568px) {
+  .routeDetails {
+    padding: 12px;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+  }
+
+  .legRoute {
+    font-size: 0.85rem;
+  }
+
+  .legInfo {
+    flex-direction: column;
+    gap: 4px;
+    padding-left: 32px;
+  }
+
+  .legs {
+    max-height: 250px;
+  }
+}

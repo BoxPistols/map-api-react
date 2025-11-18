@@ -1,6 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { withGoogleMap, GoogleMap, Marker } from 'react-google-maps'
+import {
+  withGoogleMap,
+  GoogleMap,
+  Marker,
+  DirectionsRenderer,
+} from 'react-google-maps'
 import Style from './Map.module.scss'
 import { GoogleApiWrapper } from 'google-maps-react'
 
@@ -34,10 +39,24 @@ const InnerMap = withGoogleMap((props) => (
           }}
         />
       ))}
+    {/* ルート表示 */}
+    {props.directionsResponse && (
+      <DirectionsRenderer
+        directions={props.directionsResponse}
+        options={{
+          suppressMarkers: true,
+          polylineOptions: {
+            strokeColor: '#4285F4',
+            strokeWeight: 5,
+            strokeOpacity: 0.8,
+          },
+        }}
+      />
+    )}
   </GoogleMap>
 ))
 
-const Map = ({ lat, lng, pins, onMapClick }) => {
+const Map = ({ lat, lng, pins, onMapClick, directionsResponse }) => {
   const position = { lat, lng }
   return (
     <InnerMap
@@ -56,6 +75,7 @@ const Map = ({ lat, lng, pins, onMapClick }) => {
       marker={{ position }}
       pins={pins}
       onMapClick={onMapClick}
+      directionsResponse={directionsResponse}
     />
   )
 }
@@ -65,6 +85,7 @@ Map.propTypes = {
   lng: PropTypes.number,
   pins: PropTypes.array,
   onMapClick: PropTypes.func,
+  directionsResponse: PropTypes.object,
 }
 
 Map.defaultProps = {
