@@ -1,14 +1,36 @@
 .placesArea {
-  margin-bottom: 0.8rem;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 400px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  background-color: #123;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+
+  @media screen and (max-width: 1024px) {
+    width: 320px;
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    height: 50vh;
+    top: auto;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
+  }
 }
 
 .container {
   background-color: #123;
   color: #f9f9f9dd;
-  padding: 0.8rem 1.5rem;
-  border-radius: 4px;
-  max-height: 400px;
+  padding: 1rem 1.5rem;
+  height: 100%;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
@@ -56,6 +78,8 @@
   list-style: none;
   padding: 0;
   margin: 0;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .placeItem {
@@ -152,10 +176,9 @@
 }
 
 // モバイル対応
-@media screen and (max-width: 568px) {
+@media screen and (max-width: 768px) {
   .container {
-    padding: 0.6rem 1rem;
-    max-height: 300px;
+    padding: 0.8rem 1rem;
   }
 
   .placeItem {

@@ -34,7 +34,7 @@ function SearchForm({ onSubmit }) {
   }
 
   return (
-    <>
+    <div className={Style.searchContainer}>
       <div className={Style.searchTypeSelector}>
         <label className={Style.radioLabel}>
           <input
@@ -81,7 +81,7 @@ function SearchForm({ onSubmit }) {
           onClick={handleClear}
         ></div>
       </form>
-    </>
+    </div>
   )
 }
 

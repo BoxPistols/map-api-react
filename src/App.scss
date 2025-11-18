@@ -82,12 +82,13 @@ a {
 .form-area {
   display: flex;
   justify-content: flex-end;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
 
   @media screen and (max-width: 768px) {
     justify-content: stretch;
-    flex-wrap: wrap;
+    width: 100%;
   }
 }
 
