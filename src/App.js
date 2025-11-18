@@ -15,6 +15,7 @@ function App() {
     address: '東京タワー',
     lat: 35.6585805,
     lng: 139.7454329,
+    zoom: 12,
   })
   const [pins, setPins] = useState([])
   const [pinMode, setPinMode] = useState(false)
@@ -27,6 +28,7 @@ function App() {
       address: message,
       lat: 0,
       lng: 0,
+      zoom: 12,
     })
   }
 
@@ -46,7 +48,11 @@ function App() {
 
         service.textSearch(request, (results, status) => {
           console.log('Places API Results:', results, status)
-          if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+          if (
+            status === window.google.maps.places.PlacesServiceStatus.OK &&
+            results &&
+            results.length > 0
+          ) {
             setPlacesResults(results)
             setIsDrawerOpen(true) // モバイルでドロワーを自動的に開く
             // 最初の結果を地図の中心に設定
@@ -55,8 +61,12 @@ function App() {
               address: firstResult.formatted_address || firstResult.name,
               lat: firstResult.geometry.location.lat(),
               lng: firstResult.geometry.location.lng(),
+              zoom: 16,
             })
-          } else if (status === window.google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+          } else if (
+            status ===
+            window.google.maps.places.PlacesServiceStatus.ZERO_RESULTS
+          ) {
             setPlacesResults([])
             setErrorMessage('見つかりませんでした、再度検索してください')
           } else {
@@ -88,6 +98,7 @@ function App() {
                 address: result.formatted_address,
                 lat: location.lat,
                 lng: location.lng,
+                zoom: 16,
               })
               setPlacesResults([]) // 通常検索時は結果をクリア
               break
@@ -142,6 +153,7 @@ function App() {
               address,
               lat,
               lng,
+              zoom: state.zoom,
             })
           }
         })
@@ -161,11 +173,12 @@ function App() {
               address,
               lat,
               lng,
+              zoom: state.zoom,
             })
           }
         })
     },
-    [pinMode]
+    [pinMode, state.zoom]
   )
 
   const removePin = useCallback((id) => {
@@ -201,7 +214,21 @@ function App() {
   // Fキーで全画面表示切り替え、ESCで全画面解除
   useEffect(() => {
     const handleKeyDown = (event) => {
+      const isEditableElement = (el) => {
+        if (!el || !el.tagName) return false
+        const tag = el.tagName.toLowerCase()
+        if (el.isContentEditable) return true
+        if (tag === 'input' || tag === 'textarea' || tag === 'select') return true
+        const role = el.getAttribute && el.getAttribute('role')
+        return role === 'textbox' || role === 'combobox'
+      }
+
       if (event.key.toLowerCase() === 'f') {
+        // フォーム入力中はトグルしない
+        const target = event.target
+        if (isEditableElement(target) || isEditableElement(document.activeElement)) {
+          return
+        }
         event.preventDefault()
         setIsFullscreen((prev) => !prev)
       } else if (event.key === 'Escape' && isFullscreen) {
@@ -241,7 +268,9 @@ function App() {
           </button>
         </section>
       </div>
-      <section className={`section result-area ${isFullscreen ? 'hidden' : ''}`}>
+      <section
+        className={`section result-area ${isFullscreen ? 'hidden' : ''}`}
+      >
         <GeoCodeResult
           address={state.address}
           lat={state.lat}
@@ -254,27 +283,53 @@ function App() {
           {isDrawerOpen ? '閉じる' : `検索結果 (${placesResults.length})`}
         </button>
       )}
-      <div className={isFullscreen ? 'hidden' : ''}>
-        <PlacesResults
-          places={placesResults}
-          onAddPin={handleAddPinFromPlace}
-          onClose={handleClosePlacesResults}
-          isDrawerOpen={isDrawerOpen}
-        />
-        <PinList
-          pins={pins}
-          onRemovePin={removePin}
-          onClearAllPins={clearAllPins}
-        />
+      <div
+        className={`content-layout holy ${
+          isFullscreen ? 'hidden' : ''
+        } ${placesResults.length === 0 ? 'left-closed' : ''} ${
+          !pinMode ? 'right-closed' : ''
+        }`}
+      >
+        {/* 左サイドバー: 検索結果 */}
+        <aside className="sidebar-left" aria-hidden={placesResults.length === 0}>
+          <div className="sidebar-inner" role="region" aria-label="検索結果">
+            <PlacesResults
+              places={placesResults}
+              onAddPin={handleAddPinFromPlace}
+              onClose={handleClosePlacesResults}
+              isDrawerOpen={isDrawerOpen}
+            />
+          </div>
+        </aside>
+
+        {/* 中央: マップ */}
+        <main className="main-center">
+          <section
+            className={`section last map-container ${
+              isFullscreen ? 'fullscreen' : ''
+            }`}
+          >
+            <Map
+              lat={state.lat}
+              lng={state.lng}
+              zoom={state.zoom}
+              pins={pins}
+              onMapClick={handleMapClick}
+            />
+          </section>
+        </main>
+
+        {/* 右サイドバー: ピン一覧 */}
+        <aside className="sidebar-right" aria-hidden={!pinMode}>
+          <div className="sidebar-inner" role="complementary" aria-label="ピン一覧">
+            <PinList
+              pins={pins}
+              onRemovePin={removePin}
+              onClearAllPins={clearAllPins}
+            />
+          </div>
+        </aside>
       </div>
-      <section className={`section last map-container ${isFullscreen ? 'fullscreen' : ''}`}>
-        <Map
-          lat={state.lat}
-          lng={state.lng}
-          pins={pins}
-          onMapClick={handleMapClick}
-        />
-      </section>
     </div>
   )
 }
