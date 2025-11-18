@@ -10,18 +10,13 @@ function SearchForm({ onSubmit }) {
 
   function handlePlaceChange(e) {
     setPlace(e.target.value)
-    const target = document.getElementById('clear_button')
-    if (e.target.value.length > 0) {
-      target.style.visibility = 'visible'
-    }
   }
 
   function handleClear() {
     setPlace('')
-    const input = document.getElementById('input')
-    input.value = ''
-    const target = document.getElementById('clear_button')
-    target.style.visibility = 'hidden'
+    if (inputRef.current) {
+      inputRef.current.focus()
+    }
   }
 
   function handleSubmit(e) {
@@ -94,29 +89,32 @@ function SearchForm({ onSubmit }) {
         className={Style.searchFrame}
         name="searchForm"
       >
-        <input
-          id="input"
-          ref={inputRef}
-          type="text"
-          value={place}
-          onChange={handlePlaceChange}
-          onCompositionStart={handleCompositionStart}
-          onCompositionEnd={handleCompositionEnd}
-          name="searchBox"
-          placeholder={
-            searchType === 'places'
-              ? '例: 東京タワーの近くのカフェ'
-              : '例: 東京タワー'
-          }
-        />
+        <div className={Style.inputWrapper}>
+          <input
+            ref={inputRef}
+            type="text"
+            value={place}
+            onChange={handlePlaceChange}
+            onCompositionStart={handleCompositionStart}
+            onCompositionEnd={handleCompositionEnd}
+            name="searchBox"
+            placeholder={
+              searchType === 'places'
+                ? '例: 東京タワーの近くのカフェ'
+                : '例: 東京タワー'
+            }
+          />
+          {place.length > 0 && (
+            <div
+              className={Style.clearButton}
+              onClick={handleClear}
+              aria-label="クリア"
+            ></div>
+          )}
+        </div>
         <button type="submit" value="検索">
           検索
         </button>
-        <div
-          id="clear_button"
-          className={Style.clearButton}
-          onClick={handleClear}
-        ></div>
       </form>
     </div>
   )
