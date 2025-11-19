@@ -8,8 +8,11 @@ import PinList from './components/PinList/PinList'
 import PlacesResults from './components/PlacesResults/PlacesResults'
 import SettingsModal from './components/SettingsModal/SettingsModal'
 import PlaceDetail from './components/PlaceDetail/PlaceDetail'
+import RouteSearch from './components/Route/RouteSearch'
+import RouteDetails from './components/Route/RouteDetails'
 import { savePins, loadPins, savePinHistory, saveSearchHistory } from './utils/storage'
 import { getPlaceDetails } from './services/places'
+import { getMultipleDirections, compareRoutes } from './services/directions'
 
 const API_KEY = process.env.REACT_APP_API_KEY
 const GEOCODE_ENDPOINT = 'https://maps.googleapis.com/maps/api/geocode/json'
@@ -36,6 +39,10 @@ function App() {
   const [placeDetails, setPlaceDetails] = useState(null)
   const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false)
   const [isLoadingDetails, setIsLoadingDetails] = useState(false)
+  const [isRouteSearchOpen, setIsRouteSearchOpen] = useState(false)
+  const [routeResults, setRouteResults] = useState(null)
+  const [isRouteDetailsOpen, setIsRouteDetailsOpen] = useState(false)
+  const [isLoadingRoute, setIsLoadingRoute] = useState(false)
 
   const setErrorMessage = (message) => {
     setState({
@@ -291,6 +298,46 @@ function App() {
     setPlacesResults([])
   }, [])
 
+  // 経路検索
+  const handleRouteSearch = useCallback(async (origin, destination, modes) => {
+    setIsLoadingRoute(true)
+
+    try {
+      const results = await getMultipleDirections(origin, destination, modes)
+      const comparison = compareRoutes(results)
+
+      if (comparison.length === 0) {
+        alert('経路が見つかりませんでした')
+        return
+      }
+
+      setRouteResults(comparison)
+      setIsRouteDetailsOpen(true)
+      setIsRouteSearchOpen(false)
+    } catch (error) {
+      console.error('Route search error:', error)
+      alert('経路検索に失敗しました')
+    } finally {
+      setIsLoadingRoute(false)
+    }
+  }, [])
+
+  // 経路検索パネルを開く
+  const handleOpenRouteSearch = useCallback((destination = '') => {
+    setIsRouteSearchOpen(true)
+  }, [])
+
+  // 経路検索パネルを閉じる
+  const handleCloseRouteSearch = useCallback(() => {
+    setIsRouteSearchOpen(false)
+  }, [])
+
+  // 経路詳細を閉じる
+  const handleCloseRouteDetails = useCallback(() => {
+    setIsRouteDetailsOpen(false)
+    setRouteResults(null)
+  }, [])
+
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev)
   }, [])
@@ -352,15 +399,24 @@ function App() {
               <span className="text">緯度経度検索</span>
             </h1>
           </a>
-          <button
-            onClick={() => setIsSettingsOpen(true)}
-            className="settings-btn"
-            title="設定と履歴"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
-            </svg>
-          </button>
+          <div className="header-actions">
+            <button
+              onClick={handleOpenRouteSearch}
+              className="route-btn"
+              title="経路検索"
+            >
+              🚗 経路
+            </button>
+            <button
+              onClick={() => setIsSettingsOpen(true)}
+              className="settings-btn"
+              title="設定と履歴"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+              </svg>
+            </button>
+          </div>
         </section>
         <section className="section form-area">
           <SearchForm onSubmit={handlePlaceSubmit} />
@@ -491,6 +547,32 @@ function App() {
                 />
               )
             )}
+          </div>
+        </div>
+      )}
+
+      {/* 経路検索モーダル */}
+      {isRouteSearchOpen && (
+        <div className="modal-overlay" onClick={handleCloseRouteSearch}>
+          <div className="modal-content route-search-modal" onClick={(e) => e.stopPropagation()}>
+            <RouteSearch
+              onSearch={handleRouteSearch}
+              onClose={handleCloseRouteSearch}
+              isLoading={isLoadingRoute}
+              currentLocation={state.address}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* 経路詳細モーダル */}
+      {isRouteDetailsOpen && routeResults && (
+        <div className="modal-overlay" onClick={handleCloseRouteDetails}>
+          <div className="modal-content route-details-modal" onClick={(e) => e.stopPropagation()}>
+            <RouteDetails
+              routes={routeResults}
+              onClose={handleCloseRouteDetails}
+            />
           </div>
         </div>
       )}

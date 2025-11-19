@@ -567,3 +567,61 @@ a {
     transform: rotate(360deg);
   }
 }
+
+// ヘッダーアクション
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+// 経路検索ボタン
+.route-btn {
+  padding: 8px 16px;
+  background: rgba(76, 175, 80, 0.3);
+  backdrop-filter: blur(10px);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(76, 175, 80, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  }
+
+  @media screen and (max-width: 768px) {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+// 経路検索モーダル
+.route-search-modal {
+  width: 90%;
+  max-width: 500px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+// 経路詳細モーダル
+.route-details-modal {
+  width: 90%;
+  max-width: 700px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
