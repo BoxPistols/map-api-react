@@ -1,0 +1,81 @@
+.container {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1.5rem 2rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 0 0 16px 16px;
+}
+
+.btn {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.saveBtn {
+  background: rgba(76, 175, 80, 0.3);
+  color: #81c784;
+
+  &:hover {
+    background: rgba(76, 175, 80, 0.5);
+    border-color: rgba(76, 175, 80, 0.6);
+  }
+}
+
+.pinBtn {
+  background: rgba(244, 67, 54, 0.3);
+  color: #ef5350;
+
+  &:hover {
+    background: rgba(244, 67, 54, 0.5);
+    border-color: rgba(244, 67, 54, 0.6);
+  }
+}
+
+.directionsBtn {
+  background: rgba(33, 150, 243, 0.3);
+  color: #64b5f6;
+
+  &:hover {
+    background: rgba(33, 150, 243, 0.5);
+    border-color: rgba(33, 150, 243, 0.6);
+  }
+}
+
+// モバイル対応
+@media screen and (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    padding: 1rem 1.5rem;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+}
