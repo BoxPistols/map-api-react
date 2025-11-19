@@ -201,6 +201,7 @@ const PinList = React.memo(({ pins, onRemovePin, onClearAllPins, onPinClick, onI
         </div>
         <ul className={Style.pinList}>
           {pins.map((pin, index) => (
+            <li key={pin.id} className={Style.pinItem}>
               <div
                 className={`${Style.pinInfo} ${Style.pinInfoClickable}`}
                 onClick={() => onPinClick(pin)}
