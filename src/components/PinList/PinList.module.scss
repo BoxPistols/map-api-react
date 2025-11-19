@@ -176,6 +176,7 @@
 .pinInfo {
   flex: 1;
   min-width: 0; // テキストの省略を有効にする
+  cursor: pointer;
 }
 
 .pinAddress {
