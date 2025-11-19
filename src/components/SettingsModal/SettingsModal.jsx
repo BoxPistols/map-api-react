@@ -21,6 +21,23 @@ const SettingsModal = ({ isOpen, onClose, onRestorePin }) => {
     }
   }, [isOpen])
 
+  // ESCキーでモーダルを閉じる
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape' && isOpen) {
+        onClose()
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscKey)
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey)
+    }
+  }, [isOpen, onClose])
+
   // 日付でグループ化
   const groupByDate = (items) => {
     const groups = {}
