@@ -29,6 +29,31 @@ Google Maps APIを使用した地図検索・ピン打ち機能を持つWebア�
 - 各ピンの緯度経度と住所を一覧表示
 - ピンの個別削除・全削除機能
 - 番号付きマーカーで識別
+- ピンクリックでズーム機能
+
+### 4. 場所の詳細情報表示
+- Google Places API Details で詳細情報を取得
+- 写真ギャラリー表示
+- レビュー表示
+- 営業時間表示
+- 連絡先情報表示
+
+### 5. 経路検索機能
+- 出発地から目的地までの経路検索
+- 複数の移動手段をサポート:
+  - 🚗 車
+  - 🚇 公共交通機関（電車・バス）
+  - 🚶 徒歩
+  - 🚴 自転車
+- ステップバイステップの道案内
+- 所要時間、距離、運賃の表示
+- 複数経路の比較
+
+### 6. データ管理
+- ピン履歴の localStorage 保存
+- JSON/CSV エクスポート機能
+- JSON インポート機能
+- 検索履歴の保存
 
 ## 🛠 技術スタック
 
@@ -54,10 +79,14 @@ Google Maps APIを使用した地図検索・ピン打ち機能を持つWebア�
 1. [Google Cloud Console](https://console.cloud.google.com/)にアクセス
 2. 新しいプロジェクトを作成
 3. 以下のAPIを有効化:
-   - Maps JavaScript API
-   - Geocoding API
+   - Maps JavaScript API（必須）
+   - Geocoding API（必須）
+   - Places API（場所の詳細情報表示に必要）
+   - Directions API（経路検索に必要）
 4. APIキーを作成
 5. 必要に応じてキーの制限を設定
+
+**注意**: 経路検索機能を使用する場合、Directions API の有効化が必須です。
 
 ### インストール手順
 
@@ -103,10 +132,28 @@ map-api-react/
 │   ├── components/      # Reactコンポーネント
 │   │   ├── Map/        # 地図コンポーネント
 │   │   ├── SearchForm/ # 検索フォーム
-│   │   └── GeoCodeResult/ # 検索結果表示
+│   │   ├── GeoCodeResult/ # 検索結果表示
+│   │   ├── PinList/    # ピン一覧
+│   │   ├── PlacesResults/ # 場所検索結果
+│   │   ├── PlaceDetail/ # 場所詳細情報
+│   │   │   ├── PhotoGallery.jsx
+│   │   │   ├── ReviewList.jsx
+│   │   │   └── OpeningHours.jsx
+│   │   ├── Route/      # 経路検索
+│   │   │   ├── RouteSearch.jsx
+│   │   │   └── RouteDetails.jsx
+│   │   └── SettingsModal/ # 設定・履歴モーダル
+│   ├── services/       # API サービス層
+│   │   ├── places.js   # Places API
+│   │   └── directions.js # Directions API
+│   ├── utils/          # ユーティリティ関数
+│   │   └── storage.js  # localStorage 管理
 │   ├── App.js          # メインアプリケーション
 │   ├── App.scss        # メインスタイル
 │   └── index.js        # エントリーポイント
+├── docs/               # ドキュメント
+│   ├── FEATURE_ROADMAP.md
+│   └── ARCHITECTURE.md
 ├── .env                # 環境変数（要作成）
 ├── package.json
 └── README.md
@@ -185,16 +232,60 @@ npm run build
 
 本プロジェクトは **npm** を使用します。`yarn.lock` は削除されています。
 
+### 公共交通機関の経路が検索できない
+
+**症状**: 公共交通機関（電車・バス）の経路検索が失敗する
+
+**主な原因**:
+
+1. **Directions API が有効になっていない**
+   - Google Cloud Console で Directions API を有効化してください
+
+2. **地域でデータが利用できない**
+   - Google Maps の公共交通データは、地域によって利用可否が異なります
+   - 日本国内でも一部の地域では公共交通データが不完全な場合があります
+
+3. **出発地/目的地が公共交通機関から離れている**
+   - 駅やバス停から離れすぎている場合、経路が見つからないことがあります
+
+**対処法**:
+- 他の移動手段（車、徒歩、自転車）を試してください
+- 出発地や目的地を公共交通機関の近くに変更してください
+- エラーメッセージの詳細を確認してください
+
+**代替サービス**:
+公共交通機関の詳細な経路検索が必要な場合は、以下のサービスも検討してください：
+- [Google Transit Partner Program](https://maps.google.com/landing/transit/cities/)
+- [駅すぱあと](https://www.ekispert.jp/)
+- [ジョルダン](https://www.jorudan.co.jp/)
+- [NAVITIME](https://www.navitime.co.jp/)
+
 ## 📖 ユーザーガイド
 
 詳しい使い方は [USER_GUIDE.md](./USER_GUIDE.md) を参照してください。
 
 ## 📝 主な変更履歴
 
-### v1.6 (最新)
+### v2.0 (最新)
+- **経路検索機能を追加**
+  - Google Directions API を使用した経路検索
+  - 複数の移動手段をサポート（車、公共交通、徒歩、自転車）
+  - ステップバイステップの道案内表示
+  - 所要時間、距離、運賃の表示
+  - 公共交通機関のエラーハンドリング改善
+- **場所の詳細情報表示機能を追加**
+  - Google Places API Details を使用
+  - 写真ギャラリー、レビュー、営業時間を表示
+- **データ管理機能を強化**
+  - JSON/CSV エクスポート機能
+  - JSON インポート機能
+  - ピン履歴・検索履歴の localStorage 保存
+
+### v1.6
 - ピンモード機能を追加
 - 複数ピンの配置と管理機能
 - ピン一覧表示UI
+- ピンクリックでズーム機能
 
 ### v1.5
 - 地図クリックで緯度経度取得機能を追加

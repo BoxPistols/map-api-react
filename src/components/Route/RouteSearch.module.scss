@@ -172,6 +172,18 @@
   font-weight: 600;
 }
 
+.transitNote {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: rgba(255, 193, 7, 0.9);
+  text-align: center;
+  line-height: 1.4;
+  padding: 0.5rem;
+  background: rgba(255, 193, 7, 0.1);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
 .searchBtn {
   padding: 1rem;
   background: rgba(33, 150, 243, 0.8);
