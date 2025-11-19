@@ -40,7 +40,8 @@ export const getDirections = (origin, destination, travelMode = 'TRANSIT', optio
       if (status === 'OK') {
         resolve(result)
       } else {
-        reject(new Error(`Directions request failed: ${status}`))
+        const errorMessage = getDirectionsErrorMessage(status)
+        reject(new Error(`${errorMessage} (${status})`))
       }
     })
   })

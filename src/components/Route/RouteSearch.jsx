@@ -126,6 +126,11 @@ const RouteSearch = ({ onSearch, onClose, currentLocation, destination, isLoadin
               </button>
             ))}
           </div>
+          {selectedModes.includes('TRANSIT') && (
+            <p className={Style.transitNote}>
+              ⚠️ 公共交通機関は地域によってデータが利用できない場合があります
+            </p>
+          )}
         </div>
 
         {/* 検索ボタン */}

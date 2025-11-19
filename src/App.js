@@ -307,8 +307,39 @@ function App() {
       const comparison = compareRoutes(results)
 
       if (comparison.length === 0) {
-        alert('経路が見つかりませんでした')
+        // すべての経路検索が失敗した場合
+        let errorMessage = '経路が見つかりませんでした。\n\n'
+
+        // TRANSITモードが含まれていた場合
+        if (modes.includes('TRANSIT')) {
+          errorMessage += '※ 公共交通機関の経路検索は、以下の理由で失敗する場合があります：\n'
+          errorMessage += '• この地域で公共交通データが利用できない\n'
+          errorMessage += '• Google Maps Platform で Transit 層が有効になっていない\n'
+          errorMessage += '• 出発地または目的地が公共交通機関の近くにない\n\n'
+          errorMessage += '他の移動手段（車、徒歩、自転車）をお試しください。'
+        } else {
+          errorMessage += '出発地と目的地を確認してください。'
+        }
+
+        alert(errorMessage)
         return
+      }
+
+      // 一部のモードが失敗した場合の通知
+      const failedModes = modes.filter(mode => !results[mode])
+      if (failedModes.length > 0 && failedModes.length < modes.length) {
+        const failedModeNames = failedModes.map(mode => {
+          const labels = { TRANSIT: '公共交通機関', DRIVING: '車', WALKING: '徒歩', BICYCLING: '自転車' }
+          return labels[mode] || mode
+        }).join('、')
+
+        let warningMessage = `${failedModeNames}の経路が見つかりませんでした。\n`
+
+        if (failedModes.includes('TRANSIT')) {
+          warningMessage += '\n※ 公共交通機関は、この地域でデータが利用できない可能性があります。'
+        }
+
+        console.warn(warningMessage)
       }
 
       setRouteResults(comparison)
@@ -316,7 +347,7 @@ function App() {
       setIsRouteSearchOpen(false)
     } catch (error) {
       console.error('Route search error:', error)
-      alert('経路検索に失敗しました')
+      alert(`経路検索に失敗しました\n\n${error.message || 'エラーが発生しました'}`)
     } finally {
       setIsLoadingRoute(false)
     }
