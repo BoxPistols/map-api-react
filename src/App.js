@@ -6,6 +6,7 @@ import GeoCodeResult from './components/GeoCodeResult/GeoCodeResult'
 import Map from './components/Map/Map'
 import PinList from './components/PinList/PinList'
 import PlacesResults from './components/PlacesResults/PlacesResults'
+import { savePins, loadPins, savePinHistory, saveSearchHistory } from './utils/storage'
 
 const API_KEY = process.env.REACT_APP_API_KEY
 const GEOCODE_ENDPOINT = 'https://maps.googleapis.com/maps/api/geocode/json'
@@ -17,7 +18,10 @@ function App() {
     lng: 139.7454329,
     zoom: 12,
   })
-  const [pins, setPins] = useState([])
+  const [pins, setPins] = useState(() => {
+    // 初期化時にlocalStorageからピンを読み込み
+    return loadPins()
+  })
   const [pinMode, setPinMode] = useState(false)
   const [placesResults, setPlacesResults] = useState([])
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -57,6 +61,8 @@ function App() {
           ) {
             setPlacesResults(results)
             setIsDrawerOpen(true) // モバイルでドロワーを自動的に開く
+            // 検索履歴を保存
+            saveSearchHistory(place, 'places', results)
             // 最初の結果を地図の中心に設定
             const firstResult = results[0]
             setState({
@@ -149,6 +155,8 @@ function App() {
               address,
             }
             setPins((prevPins) => [...prevPins, newPin])
+            // ピン履歴に保存
+            savePinHistory(newPin)
           } else {
             // 通常モード：stateを更新
             setState({
@@ -170,6 +178,8 @@ function App() {
               address,
             }
             setPins((prevPins) => [...prevPins, newPin])
+            // ピン履歴に保存
+            savePinHistory(newPin)
           } else {
             setState({
               address,
@@ -191,6 +201,10 @@ function App() {
     setPins([])
   }, [])
 
+  const handleImportPins = useCallback((importedPins) => {
+    setPins(importedPins)
+  }, [])
+
   const togglePinMode = useCallback(() => {
     setPinMode((prev) => !prev)
   }, [])
@@ -203,6 +217,8 @@ function App() {
       address: pin.address,
     }
     setPins((prevPins) => [...prevPins, newPin])
+    // ピン履歴に保存
+    savePinHistory(newPin)
   }, [])
 
   const handleFocusPlace = useCallback((pin) => {
@@ -211,6 +227,15 @@ function App() {
       lat: pin.lat,
       lng: pin.lng,
       zoom: 16,
+    })
+  }, [])
+
+  const handlePinClick = useCallback((pin) => {
+    setState({
+      address: pin.address,
+      lat: pin.lat,
+      lng: pin.lng,
+      zoom: 18, // ピンクリック時は少し拡大
     })
   }, [])
 
@@ -227,6 +252,11 @@ function App() {
   const togglePinDrawer = useCallback(() => {
     setIsPinDrawerOpen((prev) => !prev)
   }, [])
+
+  // ピンが変更されたらlocalStorageに保存
+  useEffect(() => {
+    savePins(pins)
+  }, [pins])
 
   // Fキーで全画面表示切り替え、ESCで全画面解除
   useEffect(() => {
@@ -370,6 +400,8 @@ function App() {
               pins={pins}
               onRemovePin={removePin}
               onClearAllPins={clearAllPins}
+              onPinClick={handlePinClick}
+              onImportPins={handleImportPins}
               isDrawerOpen={isPinDrawerOpen}
             />
           </div>
