@@ -2,6 +2,26 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Style from './PlacesResults.module.scss'
 
+// SVGアイコンコンポーネント
+const LocationIcon = () => (
+  <svg className={Style.locationIcon} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+  </svg>
+)
+
+// 住所から国名と郵便番号を除外する関数
+const formatAddress = (address) => {
+  if (!address) return ''
+
+  // "日本、" を除去
+  let formatted = address.replace(/^日本、?\s*/g, '')
+
+  // 郵便番号（〒XXX-XXXX）を除去
+  formatted = formatted.replace(/〒\d{3}-?\d{4}\s*/g, '')
+
+  return formatted.trim()
+}
+
 const PlacesResults = React.memo(({ places, onAddPin, onClose, isDrawerOpen, onFocusPlace, isCollapsed, onToggleCollapse, onShowDetails }) => {
   if (!places || places.length === 0) {
     return null
@@ -60,6 +80,7 @@ const PlacesResults = React.memo(({ places, onAddPin, onClose, isDrawerOpen, onF
                 }
               }}
             >
+              <LocationIcon />
               <div className={Style.placeInfo}>
                 <div className={Style.placeName}>
                   <strong>{index + 1}. {place.name}</strong>
@@ -68,7 +89,7 @@ const PlacesResults = React.memo(({ places, onAddPin, onClose, isDrawerOpen, onF
                   )}
                 </div>
                 <div className={Style.placeAddress}>
-                  {place.formatted_address || place.vicinity}
+                  {formatAddress(place.formatted_address || place.vicinity)}
                 </div>
                 {place.types && place.types.length > 0 && (
                   <div className={Style.placeTypes}>

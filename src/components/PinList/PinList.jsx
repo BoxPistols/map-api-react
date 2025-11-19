@@ -119,7 +119,7 @@ const PinList = React.memo(({ pins, onRemovePin, onClearAllPins, onPinClick, onI
         else if (Array.isArray(data)) {
           if (window.confirm(`${data.length}件のピンをインポートしますか？`)) {
             const importedPins = data.map((item) => ({
-              id: Date.now() + Math.random(), // ユニークなIDを生成
+              id: crypto.randomUUID(), // ユニークなIDを生成
               lat: item.latitude,
               lng: item.longitude,
               address: item.address,
@@ -205,7 +205,6 @@ const PinList = React.memo(({ pins, onRemovePin, onClearAllPins, onPinClick, onI
               <div
                 className={Style.pinInfo}
                 onClick={() => onPinClick(pin)}
-                style={{ cursor: 'pointer' }}
                 title="クリックして地図を移動"
               >
                 <div className={Style.pinAddress}>

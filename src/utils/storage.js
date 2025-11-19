@@ -84,8 +84,8 @@ export const saveSearchHistory = (searchQuery, searchType, results) => {
       firstResult: results.length > 0 ? {
         name: results[0].name,
         address: results[0].formatted_address || results[0].vicinity,
-        lat: results[0].geometry.location.lat(),
-        lng: results[0].geometry.location.lng(),
+        lat: typeof results[0].geometry.location.lat === 'function' ? results[0].geometry.location.lat() : results[0].geometry.location.lat,
+        lng: typeof results[0].geometry.location.lng === 'function' ? results[0].geometry.location.lng() : results[0].geometry.location.lng,
       } : null,
     }
 

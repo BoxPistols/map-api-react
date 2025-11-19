@@ -13,6 +13,7 @@ import { getPlaceDetails } from './services/places'
 
 const API_KEY = process.env.REACT_APP_API_KEY
 const GEOCODE_ENDPOINT = 'https://maps.googleapis.com/maps/api/geocode/json'
+const PIN_CLICK_ZOOM_LEVEL = 18 // ピンクリック時のズームレベル
 
 function App() {
   const [state, setState] = useState({
@@ -133,6 +134,17 @@ function App() {
     }
   }
 
+  // ピン追加ヘルパー関数
+  const addPin = useCallback((pinDetails) => {
+    const newPin = {
+      id: crypto.randomUUID(), // より安全な一意ID
+      ...pinDetails,
+    }
+    setPins((prevPins) => [...prevPins, newPin])
+    savePinHistory(newPin)
+    return newPin
+  }, [])
+
   const handleMapClick = useCallback(
     (event) => {
       const lat = event.latLng.lat()
@@ -155,15 +167,7 @@ function App() {
 
           if (pinMode) {
             // ピンモード：新しいピンを追加
-            const newPin = {
-              id: Date.now(),
-              lat,
-              lng,
-              address,
-            }
-            setPins((prevPins) => [...prevPins, newPin])
-            // ピン履歴に保存
-            savePinHistory(newPin)
+            addPin({ lat, lng, address })
           } else {
             // 通常モード：stateを更新
             setState({
@@ -178,15 +182,7 @@ function App() {
           // エラーの場合も座標のみ表示
           const address = `緯度: ${lat.toFixed(6)}, 経度: ${lng.toFixed(6)}`
           if (pinMode) {
-            const newPin = {
-              id: Date.now(),
-              lat,
-              lng,
-              address,
-            }
-            setPins((prevPins) => [...prevPins, newPin])
-            // ピン履歴に保存
-            savePinHistory(newPin)
+            addPin({ lat, lng, address })
           } else {
             setState({
               address,
@@ -197,7 +193,7 @@ function App() {
           }
         })
     },
-    [pinMode, state.zoom]
+    [pinMode, state.zoom, addPin]
   )
 
   const removePin = useCallback((id) => {
@@ -213,8 +209,9 @@ function App() {
   }, [])
 
   const handleRestorePinFromHistory = useCallback((pin) => {
+    // 履歴から復元する場合は新しい履歴を作らない
     const newPin = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       lat: pin.lat,
       lng: pin.lng,
       address: pin.address,
@@ -265,16 +262,12 @@ function App() {
   }, [])
 
   const handleAddPinFromPlace = useCallback((pin) => {
-    const newPin = {
-      id: Date.now(),
+    addPin({
       lat: pin.lat,
       lng: pin.lng,
       address: pin.address,
-    }
-    setPins((prevPins) => [...prevPins, newPin])
-    // ピン履歴に保存
-    savePinHistory(newPin)
-  }, [])
+    })
+  }, [addPin])
 
   const handleFocusPlace = useCallback((pin) => {
     setState({
@@ -290,7 +283,7 @@ function App() {
       address: pin.address,
       lat: pin.lat,
       lng: pin.lng,
-      zoom: 18, // ピンクリック時は少し拡大
+      zoom: PIN_CLICK_ZOOM_LEVEL,
     })
   }, [])
 
