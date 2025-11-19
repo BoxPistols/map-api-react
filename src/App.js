@@ -6,6 +6,7 @@ import GeoCodeResult from './components/GeoCodeResult/GeoCodeResult'
 import Map from './components/Map/Map'
 import PinList from './components/PinList/PinList'
 import PlacesResults from './components/PlacesResults/PlacesResults'
+import SettingsModal from './components/SettingsModal/SettingsModal'
 import { savePins, loadPins, savePinHistory, saveSearchHistory } from './utils/storage'
 
 const API_KEY = process.env.REACT_APP_API_KEY
@@ -28,6 +29,7 @@ function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [isResultsCollapsed, setIsResultsCollapsed] = useState(false)
   const [isPinDrawerOpen, setIsPinDrawerOpen] = useState(false)
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
   const setErrorMessage = (message) => {
     setState({
@@ -205,6 +207,16 @@ function App() {
     setPins(importedPins)
   }, [])
 
+  const handleRestorePinFromHistory = useCallback((pin) => {
+    const newPin = {
+      id: Date.now(),
+      lat: pin.lat,
+      lng: pin.lng,
+      address: pin.address,
+    }
+    setPins((prevPins) => [...prevPins, newPin])
+  }, [])
+
   const togglePinMode = useCallback(() => {
     setPinMode((prev) => !prev)
   }, [])
@@ -292,7 +304,7 @@ function App() {
   return (
     <div className={`App ${isFullscreen ? 'is-fullscreen' : ''}`}>
       <div className={`control-area ${isFullscreen ? 'hidden' : ''}`}>
-        <section className="section">
+        <section className="section header-section">
           <a href="/">
             <h1>
               <ruby>
@@ -304,6 +316,13 @@ function App() {
               <span className="text">緯度経度検索</span>
             </h1>
           </a>
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            className="settings-btn"
+            title="設定と履歴"
+          >
+            ⚙️
+          </button>
         </section>
         <section className="section form-area">
           <SearchForm onSubmit={handlePlaceSubmit} />
@@ -407,6 +426,13 @@ function App() {
           </div>
         </aside>
       </div>
+
+      {/* 設定モーダル */}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        onRestorePin={handleRestorePinFromHistory}
+      />
     </div>
   )
 }
