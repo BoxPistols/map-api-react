@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Style from './PlacesResults.module.scss'
 
-const PlacesResults = React.memo(({ places, onAddPin, onClose, isDrawerOpen }) => {
+const PlacesResults = React.memo(({ places, onAddPin, onClose, isDrawerOpen, onFocusPlace, isCollapsed, onToggleCollapse }) => {
   if (!places || places.length === 0) {
     return null
   }
@@ -22,28 +22,49 @@ const PlacesResults = React.memo(({ places, onAddPin, onClose, isDrawerOpen }) =
     onAddPin(pin)
   }
 
+  const handleFocus = (place) => {
+    const location = place.geometry.location
+    const lat = typeof location.lat === 'function' ? location.lat() : location.lat
+    const lng = typeof location.lng === 'function' ? location.lng() : location.lng
+    const payload = {
+      lat,
+      lng,
+      address: place.formatted_address || place.name,
+      name: place.name,
+    }
+    onFocusPlace && onFocusPlace(payload)
+  }
+
   return (
-    <section className={`section ${Style.placesArea} ${isDrawerOpen ? Style.open : ''}`}>
+    <section className={`section ${Style.placesArea} ${isDrawerOpen ? Style.open : ''} ${isCollapsed ? Style.collapsed : ''}`}>
       <div className={Style.container}>
         <div className={Style.header}>
           <h3 className={Style.title}>検索結果 ({places.length}件)</h3>
-          <button onClick={onClose} className={Style.closeButton}>
-            閉じる
+          <button onClick={onToggleCollapse} className={Style.closeButton} aria-expanded={!isCollapsed}>
+            {isCollapsed ? '開く' : '閉じる'}
           </button>
+          <button onClick={onClose} className={Style.closeButton}>クリア</button>
         </div>
         <ul className={Style.placesList}>
           {places.map((place, index) => (
-            <li key={place.place_id} className={Style.placeItem}>
+            <li
+              key={place.place_id}
+              className={Style.placeItem}
+              onClick={() => handleFocus(place)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  handleFocus(place)
+                }
+              }}
+            >
               <div className={Style.placeInfo}>
                 <div className={Style.placeName}>
                   <strong>{index + 1}. {place.name}</strong>
                   {place.rating && (
-                    <span className={Style.rating}>
-                      <span role="img" aria-label="評価">
-                        ⭐
-                      </span>{' '}
-                      {place.rating.toFixed(1)}
-                    </span>
+                    <span className={Style.rating}>{place.rating.toFixed(1)}</span>
                   )}
                 </div>
                 <div className={Style.placeAddress}>
@@ -60,7 +81,10 @@ const PlacesResults = React.memo(({ places, onAddPin, onClose, isDrawerOpen }) =
                 )}
               </div>
               <button
-                onClick={() => handleAddPin(place)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleAddPin(place)
+                }}
                 className={Style.addButton}
                 title="このピンを追加"
               >
@@ -136,6 +160,9 @@ PlacesResults.propTypes = {
   onAddPin: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
   isDrawerOpen: PropTypes.bool,
+  onFocusPlace: PropTypes.func,
+  isCollapsed: PropTypes.bool,
+  onToggleCollapse: PropTypes.func,
 }
 
 export default PlacesResults

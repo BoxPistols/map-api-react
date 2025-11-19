@@ -7,7 +7,7 @@ a {
 }
 
 .App {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #0f3d2e; // グリーン系単色
   min-height: 100vh;
   padding: 16px;
   margin: auto;
@@ -25,9 +25,7 @@ a {
     left: 0;
     right: 0;
     bottom: 0;
-    background:
-      radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(250, 128, 114, 0.3), transparent 50%);
+    background: none; // 装飾グラデーション撤去
     pointer-events: none;
   }
 
@@ -37,31 +35,31 @@ a {
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 8px;
     position: sticky;
     top: 0;
     z-index: 100;
-    padding: 16px 20px;
+    padding: 8px 10px; // コンパクト化
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-radius: 16px;
+    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.18);
     box-shadow:
       0 8px 32px 0 rgba(31, 38, 135, 0.37),
       inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
-    margin-bottom: 16px;
+    margin-bottom: 10px;
 
     @media screen and (max-width: 768px) {
       flex-direction: column;
       align-items: stretch;
-      gap: 12px;
-      padding: 12px 16px;
+      gap: 8px;
+      padding: 10px 12px;
     }
   }
 
   a h1 {
-    font-size: 1.5rem;
+    font-size: 1.1rem; // コンパクト化
     font-weight: 700;
     display: block;
     padding-left: 8px;
@@ -72,7 +70,7 @@ a {
 
     span {
       &.logo {
-        font-size: 1.75rem;
+        font-size: 1.25rem;
         font-family: 'Roboto Condensed', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         font-weight: 800;
         background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
@@ -81,16 +79,20 @@ a {
         background-clip: text;
       }
       &.text {
-        font-size: 0.9rem;
+        display: block;            // ロゴの下に縦積み
+        font-size: 0.8rem;
         letter-spacing: 0.5px;
-        padding-left: 6px;
+        padding-left: 0;
+        margin-top: 2px;
         opacity: 0.95;
       }
     }
     rt {
       font-size: 11px;
-      letter-spacing: -0.9rem;
-      display: block;
+      letter-spacing: 0;          // 文字のつぶれを防ぐ
+      display: block;             // ルビは下段に折り返し
+      line-height: 1.1;
+      margin-top: 1px;
       opacity: 0.8;
     }
     @media screen and (max-width: 568px) {
@@ -107,6 +109,97 @@ a {
   }
 }
 
+// =========================================
+// レイアウト: 聖杯（左:検索結果 / 中央:地図 / 右:ピン一覧）
+// =========================================
+.content-layout.holy {
+  display: grid;
+  grid-template-columns: 300px 1fr 260px;
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 16px;
+
+  @media screen and (max-width: 1200px) {
+    grid-template-columns: 260px 1fr 240px;
+  }
+  @media screen and (max-width: 1024px) {
+    grid-template-columns: 240px 1fr 220px;
+  }
+  @media screen and (max-width: 768px) {
+    display: block; // モバイルは従来どおり（左=ドロワー）
+  }
+}
+
+.sidebar-left,
+.sidebar-right {
+  position: relative;
+
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
+}
+
+.sidebar-inner {
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+}
+
+.main-center {
+  min-width: 0; // 子要素のオーバーフロー抑止
+}
+
+// サイドバー開閉
+.content-layout.holy.left-closed {
+  grid-template-columns: 0 1fr 260px;
+}
+.content-layout.holy.left-collapsed {
+  /* 左カラムを完全に取り除き、マップを左端まで広げる */
+  grid-template-columns: 1fr 260px;
+}
+.content-layout.holy.right-closed {
+  grid-template-columns: 300px 1fr 0;
+}
+.content-layout.holy.left-closed.right-closed {
+  grid-template-columns: 0 1fr 0;
+}
+.content-layout.holy.left-collapsed.right-closed,
+.content-layout.holy.left-closed.right-closed {
+  /* 検索リストが閉じていて、かつ右リストも閉じている時は
+     マップだけの1カラムにして全幅を使う */
+  grid-template-columns: 1fr;
+}
+.content-layout.holy.left-closed .sidebar-left,
+.content-layout.holy.right-closed .sidebar-right {
+  width: 0;
+  overflow: hidden;
+}
+.content-layout.holy.left-collapsed .sidebar-left {
+  display: none; /* グリッドから除外 */
+}
+.sidebar-left-tab {
+  position: fixed; /* 左カラムを0にしても押せるように画面左に固定 */
+  top: 120px;
+  left: 8px;
+  width: 24px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(31, 41, 55, 0.7);
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 1000;
+  display: none;
+}
+.content-layout.holy.left-collapsed .sidebar-left-tab {
+  display: inline-block;
+}
+.content-layout.holy.left-closed .sidebar-left .sidebar-inner,
+.content-layout.holy.right-closed .sidebar-right .sidebar-inner {
+  display: none;
+}
+
 .result-area {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px) saturate(180%);
@@ -114,10 +207,10 @@ a {
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 12px;
   color: #ffffff;
-  font-size: 0.95rem;
-  margin: 0 0 16px 0;
-  line-height: 1.8;
-  padding: 16px 24px;
+  font-size: 0.9rem;
+  margin: 0 0 10px 0; // 余白を詰める
+  line-height: 1.6;
+  padding: 8px 12px; // 余白を詰める
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
   transition: all 0.3s ease;
 
@@ -174,16 +267,16 @@ a {
   }
 
   &.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #16a34a; // グリーン
     border-color: rgba(255, 255, 255, 0.5);
     box-shadow:
-      0 4px 15px 0 rgba(102, 126, 234, 0.4),
+      0 4px 15px 0 rgba(22, 163, 74, 0.4),
       inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
 
     &:hover {
-      background: linear-gradient(135deg, #5568d3 0%, #6a3d91 100%);
+      background: #15803d; // 濃いグリーン
       box-shadow:
-        0 6px 20px 0 rgba(102, 126, 234, 0.5),
+        0 6px 20px 0 rgba(22, 163, 74, 0.5),
         inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
     }
   }
@@ -207,11 +300,63 @@ a {
     top: 0;
     left: 0;
     width: 100vw;
+    /* 端末のUIを考慮した実表示高に追随 */
     height: 100vh;
+    height: 100svh;
+    height: 100dvh;
     z-index: 9999;
     margin: 0;
     padding: 0;
     border-radius: 0;
+  }
+}
+
+/* フルスクリーン時は周辺UIを非表示にして完全に中央へ */
+.App.is-fullscreen {
+  .control-area,
+  .result-area,
+  .sidebar-left,
+  .sidebar-right,
+  .drawer-toggle-btn {
+    display: none !important;
+  }
+  .content-layout.holy {
+    /* グリッド自体は残してもOKだが、最小干渉にする */
+    pointer-events: none;
+  }
+}
+
+// モバイル向け 全画面トグルボタン
+.map-fullscreen-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10000;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(31, 41, 55, 0.7);
+  color: #fff;
+  line-height: 32px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+
+  &:hover {
+    background: rgba(31, 41, 55, 0.85);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  // デスクトップでは非表示、モバイルのみ表示
+  display: none;
+  @media screen and (max-width: 768px) {
+    display: inline-block;
   }
 }
 
@@ -223,7 +368,7 @@ a {
   z-index: 999;
   padding: 6px 12px;
   cursor: pointer;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #16a34a; // グリーン
   color: white;
   border: none;
   border-radius: 16px;
@@ -231,23 +376,64 @@ a {
   font-weight: 700;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow:
-    0 6px 20px 0 rgba(102, 126, 234, 0.5),
+    0 6px 20px 0 rgba(22, 163, 74, 0.5),
     inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
   letter-spacing: 0.3px;
   display: none;
 
   &:hover {
-    background: linear-gradient(135deg, #5568d3 0%, #6a3d91 100%);
+    background: #15803d;
     transform: translateY(-2px);
     box-shadow:
-      0 8px 24px 0 rgba(102, 126, 234, 0.6),
+      0 8px 24px 0 rgba(22, 163, 74, 0.6),
       inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
   }
 
   &:active {
     transform: translateY(0);
     box-shadow:
-      0 4px 16px 0 rgba(102, 126, 234, 0.5),
+      0 4px 16px 0 rgba(22, 163, 74, 0.5),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+  }
+
+  @media screen and (max-width: 768px) {
+    display: block;
+  }
+}
+
+// モバイル用 ピン一覧ドロワートグルボタン
+.pin-drawer-toggle-btn {
+  position: fixed;
+  bottom: 70px;
+  right: 20px;
+  z-index: 999;
+  padding: 6px 12px;
+  cursor: pointer;
+  background: #16a34a; // グリーン
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 6px 20px 0 rgba(22, 163, 74, 0.5),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.3px;
+  display: none;
+
+  &:hover {
+    background: #15803d;
+    transform: translateY(-2px);
+    box-shadow:
+      0 8px 24px 0 rgba(22, 163, 74, 0.6),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow:
+      0 4px 16px 0 rgba(22, 163, 74, 0.5),
       inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
   }
 

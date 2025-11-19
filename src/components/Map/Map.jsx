@@ -42,7 +42,7 @@ const Map = ({ lat, lng, zoom, pins, onMapClick }) => {
   const position = { lat, lng }
   return (
     <InnerMap
-      containerElement={<div />}
+      containerElement={<div style={{ width: '100%', height: '100%' }} />}
       mapElement={
         <div
           className={Style.map}

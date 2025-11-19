@@ -1,12 +1,8 @@
 .map {
-  display: 'block';
-  min-width: 96vh;
+  display: block;
+  width: 100%;
   min-height: 78vh;
   max-height: 84vh;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
   overflow: hidden;
   cursor: crosshair !important;
 

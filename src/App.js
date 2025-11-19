@@ -22,6 +22,8 @@ function App() {
   const [placesResults, setPlacesResults] = useState([])
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [isResultsCollapsed, setIsResultsCollapsed] = useState(false)
+  const [isPinDrawerOpen, setIsPinDrawerOpen] = useState(false)
 
   const setErrorMessage = (message) => {
     setState({
@@ -203,12 +205,27 @@ function App() {
     setPins((prevPins) => [...prevPins, newPin])
   }, [])
 
+  const handleFocusPlace = useCallback((pin) => {
+    setState({
+      address: pin.address,
+      lat: pin.lat,
+      lng: pin.lng,
+      zoom: 16,
+    })
+  }, [])
+
   const handleClosePlacesResults = useCallback(() => {
     setPlacesResults([])
   }, [])
 
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev)
+  }, [])
+  const toggleResultsCollapse = useCallback(() => {
+    setIsResultsCollapsed((prev) => !prev)
+  }, [])
+  const togglePinDrawer = useCallback(() => {
+    setIsPinDrawerOpen((prev) => !prev)
   }, [])
 
   // Fキーで全画面表示切り替え、ESCで全画面解除
@@ -243,7 +260,7 @@ function App() {
   }, [isFullscreen])
 
   return (
-    <div className="App">
+    <div className={`App ${isFullscreen ? 'is-fullscreen' : ''}`}>
       <div className={`control-area ${isFullscreen ? 'hidden' : ''}`}>
         <section className="section">
           <a href="/">
@@ -283,13 +300,28 @@ function App() {
           {isDrawerOpen ? '閉じる' : `検索結果 (${placesResults.length})`}
         </button>
       )}
+      {/* モバイル用ピンドロワートグルボタン */}
+      {pins.length > 0 && !isFullscreen && (
+        <button className="pin-drawer-toggle-btn" onClick={togglePinDrawer}>
+          {isPinDrawerOpen ? '閉じる' : `ピン一覧 (${pins.length})`}
+        </button>
+      )}
       <div
         className={`content-layout holy ${
-          isFullscreen ? 'hidden' : ''
-        } ${placesResults.length === 0 ? 'left-closed' : ''} ${
-          !pinMode ? 'right-closed' : ''
-        }`}
+          placesResults.length === 0 ? 'left-closed' : isResultsCollapsed ? 'left-collapsed' : ''
+        } ${!pinMode ? 'right-closed' : ''}`}
       >
+        {isResultsCollapsed && placesResults.length > 0 && (
+          <button
+            type="button"
+            className="sidebar-left-tab"
+            aria-label="検索結果を開く"
+            title="検索結果を開く"
+            onClick={toggleResultsCollapse}
+          >
+            ▶
+          </button>
+        )}
         {/* 左サイドバー: 検索結果 */}
         <aside className="sidebar-left" aria-hidden={placesResults.length === 0}>
           <div className="sidebar-inner" role="region" aria-label="検索結果">
@@ -298,6 +330,9 @@ function App() {
               onAddPin={handleAddPinFromPlace}
               onClose={handleClosePlacesResults}
               isDrawerOpen={isDrawerOpen}
+              onFocusPlace={handleFocusPlace}
+              isCollapsed={isResultsCollapsed}
+              onToggleCollapse={toggleResultsCollapse}
             />
           </div>
         </aside>
@@ -316,6 +351,15 @@ function App() {
               pins={pins}
               onMapClick={handleMapClick}
             />
+            <button
+              type="button"
+              className="map-fullscreen-btn"
+              onClick={() => setIsFullscreen((prev) => !prev)}
+              aria-label={isFullscreen ? '全画面を終了' : '全画面で表示'}
+              title={isFullscreen ? '全画面を終了' : '全画面で表示'}
+            >
+              {isFullscreen ? '×' : '⤢'}
+            </button>
           </section>
         </main>
 
@@ -326,6 +370,7 @@ function App() {
               pins={pins}
               onRemovePin={removePin}
               onClearAllPins={clearAllPins}
+              isDrawerOpen={isPinDrawerOpen}
             />
           </div>
         </aside>

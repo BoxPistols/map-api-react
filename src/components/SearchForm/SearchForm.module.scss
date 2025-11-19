@@ -73,9 +73,9 @@
   }
 
   input[type='radio']:checked + span {
-    background: #2563eb;
+    background: #16a34a;
     color: #ffffff;
-    border-color: #2563eb;
+    border-color: #16a34a;
   }
 
   input[type='radio']:focus + span,
@@ -146,7 +146,7 @@ input {
   }
 }
 
-button {
+.submitButton {
   height: 24px;
   min-width: 56px;
   padding: 0.3rem 0.75rem;

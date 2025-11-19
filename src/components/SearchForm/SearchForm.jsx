@@ -112,7 +112,7 @@ function SearchForm({ onSubmit }) {
             ></div>
           )}
         </div>
-        <button type="submit" value="検索">
+        <button type="submit" value="検索" className={Style.submitButton}>
           検索
         </button>
       </form>

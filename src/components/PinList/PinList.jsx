@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Style from './PinList.module.scss'
 
-const PinList = React.memo(({ pins, onRemovePin, onClearAllPins }) => {
+const PinList = React.memo(({ pins, onRemovePin, onClearAllPins, isDrawerOpen }) => {
   // JSONエクスポート
   const exportToJSON = () => {
     const data = pins.map((pin, index) => ({
@@ -78,7 +78,7 @@ const PinList = React.memo(({ pins, onRemovePin, onClearAllPins }) => {
   }
 
   return (
-    <section className={`section ${Style.pinsArea}`}>
+    <section className={`section ${Style.pinsArea} ${isDrawerOpen ? Style.open : ''}`}>
       <div className={Style.container}>
         <div className={Style.header}>
           <h3 className={Style.title}>ピン一覧 ({pins.length})</h3>
@@ -148,6 +148,7 @@ PinList.propTypes = {
   ).isRequired,
   onRemovePin: PropTypes.func.isRequired,
   onClearAllPins: PropTypes.func.isRequired,
+  isDrawerOpen: PropTypes.bool,
 }
 
 export default PinList
