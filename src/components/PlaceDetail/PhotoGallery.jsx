@@ -30,7 +30,7 @@ const PhotoGallery = ({ photos, placeName }) => {
         {photoUrl && (
           <img
             src={photoUrl}
-            alt={`${placeName} - Photo ${currentIndex + 1}`}
+            alt={`${placeName} - ${currentIndex + 1}`}
             className={Style.photo}
           />
         )}
@@ -75,7 +75,7 @@ const PhotoGallery = ({ photos, placeName }) => {
                 {thumbUrl && (
                   <img
                     src={thumbUrl}
-                    alt={`Thumbnail ${index + 1}`}
+                    alt={`${index + 1}`}
                     className={Style.thumbnailImg}
                   />
                 )}

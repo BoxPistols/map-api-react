@@ -203,13 +203,44 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.addButton {
+.actions {
   position: absolute;
   right: 12px;
   bottom: 12px;
+  display: flex;
+  gap: 6px;
+}
+
+.detailsButton {
   padding: 6px 10px;
   cursor: pointer;
-  background: rgba(244, 67, 54, 0.85); // ピン色と合わせる（赤系）
+  background: rgba(33, 150, 243, 0.85);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(25, 118, 210, 0.95);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+  }
+}
+
+.addButton {
+  padding: 6px 10px;
+  cursor: pointer;
+  background: rgba(244, 67, 54, 0.85);
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
@@ -218,6 +249,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
   letter-spacing: 0.3px;
+  white-space: nowrap;
 
   &:hover {
     background: rgba(211, 47, 47, 0.95);

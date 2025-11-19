@@ -7,7 +7,9 @@ import Map from './components/Map/Map'
 import PinList from './components/PinList/PinList'
 import PlacesResults from './components/PlacesResults/PlacesResults'
 import SettingsModal from './components/SettingsModal/SettingsModal'
+import PlaceDetail from './components/PlaceDetail/PlaceDetail'
 import { savePins, loadPins, savePinHistory, saveSearchHistory } from './utils/storage'
+import { getPlaceDetails } from './services/places'
 
 const API_KEY = process.env.REACT_APP_API_KEY
 const GEOCODE_ENDPOINT = 'https://maps.googleapis.com/maps/api/geocode/json'
@@ -30,6 +32,9 @@ function App() {
   const [isResultsCollapsed, setIsResultsCollapsed] = useState(false)
   const [isPinDrawerOpen, setIsPinDrawerOpen] = useState(false)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [placeDetails, setPlaceDetails] = useState(null)
+  const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false)
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false)
 
   const setErrorMessage = (message) => {
     setState({
@@ -217,6 +222,44 @@ function App() {
     setPins((prevPins) => [...prevPins, newPin])
   }, [])
 
+  // 詳細情報を取得して表示
+  const handleShowPlaceDetails = useCallback(async (placeId) => {
+    if (!placeId) return
+
+    setIsLoadingDetails(true)
+    setIsDetailPanelOpen(true)
+
+    try {
+      const details = await getPlaceDetails(placeId)
+      setPlaceDetails(details)
+    } catch (error) {
+      console.error('Place details fetch error:', error)
+      alert('詳細情報の取得に失敗しました')
+      setIsDetailPanelOpen(false)
+    } finally {
+      setIsLoadingDetails(false)
+    }
+  }, [])
+
+  // 詳細パネルを閉じる
+  const handleClosePlaceDetails = useCallback(() => {
+    setIsDetailPanelOpen(false)
+    setPlaceDetails(null)
+  }, [])
+
+  // 詳細パネルからピンを追加
+  const handleAddPinFromDetails = useCallback((pinData) => {
+    const newPin = {
+      id: Date.now(),
+      lat: pinData.lat,
+      lng: pinData.lng,
+      address: pinData.address,
+    }
+    setPins((prevPins) => [...prevPins, newPin])
+    savePinHistory(newPin)
+    alert('ピンを追加しました！')
+  }, [])
+
   const togglePinMode = useCallback(() => {
     setPinMode((prev) => !prev)
   }, [])
@@ -382,6 +425,7 @@ function App() {
               onFocusPlace={handleFocusPlace}
               isCollapsed={isResultsCollapsed}
               onToggleCollapse={toggleResultsCollapse}
+              onShowDetails={handleShowPlaceDetails}
             />
           </div>
         </aside>
@@ -433,6 +477,28 @@ function App() {
         onClose={() => setIsSettingsOpen(false)}
         onRestorePin={handleRestorePinFromHistory}
       />
+
+      {/* 詳細情報モーダル */}
+      {isDetailPanelOpen && (
+        <div className="modal-overlay" onClick={handleClosePlaceDetails}>
+          <div className="modal-content place-detail-modal" onClick={(e) => e.stopPropagation()}>
+            {isLoadingDetails ? (
+              <div className="loading-state">
+                <div className="loading-spinner"></div>
+                <p>詳細情報を読み込んでいます...</p>
+              </div>
+            ) : (
+              placeDetails && (
+                <PlaceDetail
+                  place={placeDetails}
+                  onClose={handleClosePlaceDetails}
+                  onAddPin={handleAddPinFromDetails}
+                />
+              )
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
