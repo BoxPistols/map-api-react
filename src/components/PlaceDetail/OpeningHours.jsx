@@ -7,7 +7,7 @@ const OpeningHours = ({ openingHours }) => {
 
   if (!openingHours) return null
 
-  const { weekday_text, open_now } = openingHours
+  const { weekday_text } = openingHours
 
   if (!weekday_text || weekday_text.length === 0) return null
 

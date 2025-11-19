@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Style from './PlacesResults.module.scss'
 
-const PlacesResults = React.memo(({ places, onAddPin, onClose, isDrawerOpen, onFocusPlace, isCollapsed, onToggleCollapse }) => {
+const PlacesResults = React.memo(({ places, onAddPin, onClose, isDrawerOpen, onFocusPlace, isCollapsed, onToggleCollapse, onShowDetails }) => {
   if (!places || places.length === 0) {
     return null
   }
@@ -80,16 +80,30 @@ const PlacesResults = React.memo(({ places, onAddPin, onClose, isDrawerOpen, onF
                   </div>
                 )}
               </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleAddPin(place)
-                }}
-                className={Style.addButton}
-                title="このピンを追加"
-              >
-                ピン追加
-              </button>
+              <div className={Style.actions}>
+                {onShowDetails && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onShowDetails(place.place_id)
+                    }}
+                    className={Style.detailsButton}
+                    title="詳細を見る"
+                  >
+                    詳細
+                  </button>
+                )}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleAddPin(place)
+                  }}
+                  className={Style.addButton}
+                  title="このピンを追加"
+                >
+                  ピン追加
+                </button>
+              </div>
             </li>
           ))}
         </ul>
@@ -163,6 +177,7 @@ PlacesResults.propTypes = {
   onFocusPlace: PropTypes.func,
   isCollapsed: PropTypes.bool,
   onToggleCollapse: PropTypes.func,
+  onShowDetails: PropTypes.func,
 }
 
 export default PlacesResults
