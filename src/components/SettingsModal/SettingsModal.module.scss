@@ -132,11 +132,46 @@
     color: rgba(255, 255, 255, 0.9);
     font-size: 0.9rem;
     cursor: pointer;
+    user-select: none;
 
     input[type='checkbox'] {
-      width: 18px;
-      height: 18px;
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 4px;
       cursor: pointer;
+      position: relative;
+      background: rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      &:checked {
+        background: #81c784;
+        border-color: #81c784;
+
+        &::after {
+          content: '';
+          position: absolute;
+          left: 5px;
+          top: 2px;
+          width: 6px;
+          height: 10px;
+          border: solid white;
+          border-width: 0 2px 2px 0;
+          transform: rotate(45deg);
+        }
+      }
+
+      &:focus {
+        outline: 2px solid rgba(129, 199, 132, 0.5);
+        outline-offset: 2px;
+      }
     }
   }
 }
