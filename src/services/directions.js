@@ -167,16 +167,16 @@ export const getTravelModeLabel = (mode) => {
 /**
  * 移動手段のアイコンを取得
  * @param {string} mode - 移動手段
- * @returns {string} - 絵文字アイコン
+ * @returns {string} - テキストアイコン
  */
 export const getTravelModeIcon = (mode) => {
   const icons = {
-    DRIVING: '🚗',
-    TRANSIT: '🚇',
-    WALKING: '🚶',
-    BICYCLING: '🚴',
+    DRIVING: '車',
+    TRANSIT: '交',
+    WALKING: '歩',
+    BICYCLING: '輪',
   }
-  return icons[mode] || '📍'
+  return icons[mode] || '●'
 }
 
 /**
@@ -187,21 +187,21 @@ export const getTravelModeIcon = (mode) => {
 export const getStepIcon = (step) => {
   if (step.transitDetails) {
     const line = step.transitDetails.line.toLowerCase()
-    if (line.includes('jr') || line.includes('電車')) return '🚃'
-    if (line.includes('地下鉄') || line.includes('metro')) return '🚇'
-    if (line.includes('バス')) return '🚌'
-    return '🚉'
+    if (line.includes('jr') || line.includes('電車')) return '電'
+    if (line.includes('地下鉄') || line.includes('metro')) return '地'
+    if (line.includes('バス')) return 'バ'
+    return '駅'
   }
 
   switch (step.travelMode) {
     case 'WALKING':
-      return '🚶'
+      return '歩'
     case 'DRIVING':
-      return '🚗'
+      return '車'
     case 'BICYCLING':
-      return '🚴'
+      return '輪'
     default:
-      return '➡️'
+      return '→'
   }
 }
 

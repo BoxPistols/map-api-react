@@ -2,7 +2,7 @@
 
 Google Maps APIを使用した地図検索・ピン打ち機能を持つWebアプリケーションです。
 
-## 📋 目次
+## 目次
 
 - [機能](#機能)
 - [技術スタック](#技術スタック)
@@ -12,7 +12,7 @@ Google Maps APIを使用した地図検索・ピン打ち機能を持つWebア�
 - [トラブルシューティング](#トラブルシューティング)
 - [ユーザーガイド](#ユーザーガイド)
 
-## ✨ 機能
+## 機能
 
 ### 1. 住所検索
 - テキスト入力で住所を検索
@@ -41,10 +41,10 @@ Google Maps APIを使用した地図検索・ピン打ち機能を持つWebア�
 ### 5. 経路検索機能
 - 出発地から目的地までの経路検索
 - 複数の移動手段をサポート:
-  - 🚗 車
-  - 🚇 公共交通機関（電車・バス）
-  - 🚶 徒歩
-  - 🚴 自転車
+  - 車
+  - 公共交通機関（電車・バス）
+  - 徒歩
+  - 自転車
 - ステップバイステップの道案内
 - 所要時間、距離、運賃の表示
 - 複数経路の比較
@@ -54,8 +54,12 @@ Google Maps APIを使用した地図検索・ピン打ち機能を持つWebア�
 - JSON/CSV エクスポート機能
 - JSON インポート機能
 - 検索履歴の保存
+- Firebase Firestore 対応（オプション）
+  - Googleアカウントでログイン
+  - クラウドへのデータ同期
+  - 複数デバイス間でのデータ共有
 
-## 🛠 技術スタック
+## 技術スタック
 
 - **フロントエンド**: React 16.13.1
 - **地図ライブラリ**:
@@ -64,9 +68,12 @@ Google Maps APIを使用した地図検索・ピン打ち機能を持つWebア�
 - **スタイリング**: SASS/SCSS
 - **HTTP通信**: Axios 0.20.0
 - **ビルドツール**: Create React App (react-scripts 3.4.3)
+- **バックエンド**: Firebase (オプション)
+  - Firebase Authentication (Google認証)
+  - Cloud Firestore (データストレージ)
 - **デプロイ**: Netlify
 
-## 🚀 セットアップ
+## セットアップ
 
 ### 前提条件
 
@@ -105,12 +112,34 @@ npm install
 
 プロジェクトルートに `.env` ファイルを作成:
 ```bash
+# Google Maps API Key (必須)
 REACT_APP_API_KEY=your_google_maps_api_key_here
+
+# Firebase Configuration (オプション)
+REACT_APP_FIREBASE_API_KEY=your_firebase_api_key_here
+REACT_APP_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=your-project-id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+REACT_APP_FIREBASE_APP_ID=your_firebase_app_id
 ```
 
 **重要**: `.env` ファイルは `.gitignore` に含まれているため、Git管理されません。
 
-## 💻 開発
+### Firebase の設定（オプション）
+
+Firebase連携を使用する場合は、以下の手順で設定してください：
+
+1. [Firebase Console](https://console.firebase.google.com/)にアクセス
+2. 新しいプロジェクトを作成
+3. プロジェクト設定から Firebase SDK の設定情報を取得
+4. Authentication で Google ログインを有効化
+5. Firestore Database を作成（テストモードまたは本番モードルール設定）
+6. `.env` ファイルに Firebase 設定を追加
+
+**Firebase を使用しない場合**: Firebase の環境変数を設定しなくても、アプリは localStorage のみで動作します。
+
+## 開発
 
 ### 開発サーバーの起動
 
@@ -174,7 +203,7 @@ npm run build
 npm test
 ```
 
-## 🌐 デプロイ
+## デプロイ
 
 ### Netlifyへのデプロイ
 
@@ -204,7 +233,7 @@ npm run build
 # build/ フォルダの内容をホスティングサービスにアップロード
 ```
 
-## 🐛 トラブルシューティング
+## トラブルシューティング
 
 ### Node.js 17以降でビルドエラーが発生する
 
@@ -260,13 +289,23 @@ npm run build
 - [ジョルダン](https://www.jorudan.co.jp/)
 - [NAVITIME](https://www.navitime.co.jp/)
 
-## 📖 ユーザーガイド
+## ユーザーガイド
 
 詳しい使い方は [USER_GUIDE.md](./USER_GUIDE.md) を参照してください。
 
-## 📝 主な変更履歴
+## 主な変更履歴
 
-### v2.0 (最新)
+### v2.1 (最新)
+- **Firebase 対応を追加**
+  - Firebase Authentication (Google ログイン)
+  - Cloud Firestore によるデータ同期
+  - localStorage と Firebase のハイブリッド保存
+  - オフライン時は localStorage、オンライン時は自動同期
+- **UI 改善**
+  - 絵文字を削除し、テキストベースのアイコンに統一
+  - アクセシビリティ向上
+
+### v2.0
 - **経路検索機能を追加**
   - Google Directions API を使用した経路検索
   - 複数の移動手段をサポート（車、公共交通、徒歩、自転車）
@@ -296,7 +335,7 @@ npm run build
 - Netlifyデプロイエラー修正
 - Node.js 17+対応
 
-## 🤝 コントリビューション
+## コントリビューション
 
 1. このリポジトリをフォーク
 2. フィーチャーブランチを作成 (`git checkout -b feature/amazing-feature`)
@@ -304,16 +343,16 @@ npm run build
 4. ブランチにプッシュ (`git push origin feature/amazing-feature`)
 5. プルリクエストを作成
 
-## 📄 ライセンス
+## ライセンス
 
 このプロジェクトはMITライセンスの下で公開されています。
 
-## 🔗 リンク
+## リンク
 
 - [Google Maps JavaScript API ドキュメント](https://developers.google.com/maps/documentation/javascript)
 - [React ドキュメント](https://reactjs.org/)
 - [Create React App ドキュメント](https://create-react-app.dev/)
 
-## 📧 お問い合わせ
+## お問い合わせ
 
 プロジェクトに関する質問や提案がある場合は、GitHubのIssuesでお知らせください。

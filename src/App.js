@@ -436,7 +436,7 @@ function App() {
               className="route-btn"
               title="経路検索"
             >
-              🚗 経路
+              経路検索
             </button>
             <button
               onClick={() => setIsSettingsOpen(true)}

@@ -8,10 +8,10 @@ const RouteSearch = ({ onSearch, onClose, currentLocation, destination, isLoadin
   const [selectedModes, setSelectedModes] = useState(['TRANSIT'])
 
   const travelModes = [
-    { value: 'TRANSIT', label: '公共交通', icon: '🚇' },
-    { value: 'DRIVING', label: '車', icon: '🚗' },
-    { value: 'WALKING', label: '徒歩', icon: '🚶' },
-    { value: 'BICYCLING', label: '自転車', icon: '🚴' },
+    { value: 'TRANSIT', label: '公共交通', icon: '交' },
+    { value: 'DRIVING', label: '車', icon: '車' },
+    { value: 'WALKING', label: '徒歩', icon: '歩' },
+    { value: 'BICYCLING', label: '自転車', icon: '輪' },
   ]
 
   const handleModeToggle = (mode) => {
@@ -86,7 +86,7 @@ const RouteSearch = ({ onSearch, onClose, currentLocation, destination, isLoadin
               title="現在地を使用"
               disabled={isLoading}
             >
-              📍
+              現在地
             </button>
           </div>
         </div>
@@ -128,7 +128,7 @@ const RouteSearch = ({ onSearch, onClose, currentLocation, destination, isLoadin
           </div>
           {selectedModes.includes('TRANSIT') && (
             <p className={Style.transitNote}>
-              ⚠️ 公共交通機関は地域によってデータが利用できない場合があります
+              ※ 公共交通機関は地域によってデータが利用できない場合があります
             </p>
           )}
         </div>
