@@ -21,8 +21,9 @@ let db
 let googleProvider
 
 // Firebase設定がすべて揃っている場合のみ初期化
+// 環境変数が未設定の場合、undefined または文字列 'undefined' になる可能性がある
 const isFirebaseConfigured = Object.values(firebaseConfig).every(
-  value => value && value !== 'undefined'
+  value => value && value !== 'undefined' && typeof value === 'string' && value.trim() !== ''
 )
 
 if (isFirebaseConfigured) {
