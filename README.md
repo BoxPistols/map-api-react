@@ -54,10 +54,6 @@ Google Maps APIを使用した地図検索・ピン打ち機能を持つWebア�
 - JSON/CSV エクスポート機能
 - JSON インポート機能
 - 検索履歴の保存
-- Firebase Firestore 対応（オプション）
-  - Googleアカウントでログイン
-  - クラウドへのデータ同期
-  - 複数デバイス間でのデータ共有
 
 ## 技術スタック
 
@@ -68,9 +64,6 @@ Google Maps APIを使用した地図検索・ピン打ち機能を持つWebア�
 - **スタイリング**: SASS/SCSS
 - **HTTP通信**: Axios 0.20.0
 - **ビルドツール**: Create React App (react-scripts 3.4.3)
-- **バックエンド**: Firebase (オプション)
-  - Firebase Authentication (Google認証)
-  - Cloud Firestore (データストレージ)
 - **デプロイ**: Netlify
 
 ## セットアップ
@@ -114,30 +107,9 @@ npm install
 ```bash
 # Google Maps API Key (必須)
 REACT_APP_API_KEY=your_google_maps_api_key_here
-
-# Firebase Configuration (オプション)
-REACT_APP_FIREBASE_API_KEY=your_firebase_api_key_here
-REACT_APP_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-REACT_APP_FIREBASE_PROJECT_ID=your-project-id
-REACT_APP_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-REACT_APP_FIREBASE_APP_ID=your_firebase_app_id
 ```
 
 **重要**: `.env` ファイルは `.gitignore` に含まれているため、Git管理されません。
-
-### Firebase の設定（オプション）
-
-Firebase連携を使用する場合は、以下の手順で設定してください：
-
-1. [Firebase Console](https://console.firebase.google.com/)にアクセス
-2. 新しいプロジェクトを作成
-3. プロジェクト設定から Firebase SDK の設定情報を取得
-4. Authentication で Google ログインを有効化
-5. Firestore Database を作成（テストモードまたは本番モードルール設定）
-6. `.env` ファイルに Firebase 設定を追加
-
-**Firebase を使用しない場合**: Firebase の環境変数を設定しなくても、アプリは localStorage のみで動作します。
 
 ## 開発
 
@@ -295,17 +267,7 @@ npm run build
 
 ## 主な変更履歴
 
-### v2.1 (最新)
-- **Firebase 対応を追加**
-  - Firebase Authentication (Google ログイン)
-  - Cloud Firestore によるデータ同期
-  - localStorage と Firebase のハイブリッド保存
-  - オフライン時は localStorage、オンライン時は自動同期
-- **UI 改善**
-  - 絵文字を削除し、テキストベースのアイコンに統一
-  - アクセシビリティ向上
-
-### v2.0
+### v2.0 (最新)
 - **経路検索機能を追加**
   - Google Directions API を使用した経路検索
   - 複数の移動手段をサポート（車、公共交通、徒歩、自転車）
@@ -352,6 +314,20 @@ npm run build
 - [Google Maps JavaScript API ドキュメント](https://developers.google.com/maps/documentation/javascript)
 - [React ドキュメント](https://reactjs.org/)
 - [Create React App ドキュメント](https://create-react-app.dev/)
+
+## 今後の実装予定
+
+以下の機能は今後実装予定です：
+
+### Firebase 連携
+- **Firebase Authentication**: Googleアカウントでのログイン機能
+- **Cloud Firestore**: クラウドへのデータ同期
+- **マルチデバイス対応**: 複数デバイス間でのデータ共有
+- **ハイブリッド保存**: localStorage と Firebase の併用
+  - オフライン時は localStorage で動作
+  - オンライン時は自動的に Firebase へ同期
+
+詳細な実装計画は `.env.example` および今後追加予定のドキュメントを参照してください。
 
 ## お問い合わせ
 
