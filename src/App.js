@@ -43,6 +43,7 @@ function App() {
   const [routeResults, setRouteResults] = useState(null)
   const [isRouteDetailsOpen, setIsRouteDetailsOpen] = useState(false)
   const [isLoadingRoute, setIsLoadingRoute] = useState(false)
+  const [isControlAreaOpen, setIsControlAreaOpen] = useState(true) // モバイル用control-areaトグル
 
   const setErrorMessage = (message) => {
     setState({
@@ -369,6 +370,16 @@ function App() {
     setRouteResults(null)
   }, [])
 
+  // 検索結果エリアをクリア（初期状態に戻す）
+  const handleClearResult = useCallback(() => {
+    setState({
+      address: '東京タワー',
+      lat: 35.6585805,
+      lng: 139.7454329,
+      zoom: 12,
+    })
+  }, [])
+
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev)
   }, [])
@@ -377,6 +388,9 @@ function App() {
   }, [])
   const togglePinDrawer = useCallback(() => {
     setIsPinDrawerOpen((prev) => !prev)
+  }, [])
+  const toggleControlArea = useCallback(() => {
+    setIsControlAreaOpen((prev) => !prev)
   }, [])
 
   // ピンが変更されたらlocalStorageに保存
@@ -417,7 +431,17 @@ function App() {
 
   return (
     <div className={`App ${isFullscreen ? 'is-fullscreen' : ''}`}>
-      <div className={`control-area ${isFullscreen ? 'hidden' : ''}`}>
+      {/* モバイル用control-areaトグルボタン */}
+      {!isFullscreen && (
+        <button
+          className="control-area-toggle-btn"
+          onClick={toggleControlArea}
+          aria-label={isControlAreaOpen ? '検索エリアを閉じる' : '検索エリアを開く'}
+        >
+          {isControlAreaOpen ? '▲' : '▼'}
+        </button>
+      )}
+      <div className={`control-area ${isFullscreen ? 'hidden' : ''} ${!isControlAreaOpen ? 'collapsed' : ''}`}>
         <section className="section header-section">
           <a href="/">
             <h1>
@@ -467,6 +491,14 @@ function App() {
           lat={state.lat}
           lng={state.lng}
         />
+        <button
+          className="result-clear-btn"
+          onClick={handleClearResult}
+          title="検索結果をクリア"
+          aria-label="検索結果をクリア"
+        >
+          ×
+        </button>
       </section>
       {/* モバイル用ドロワートグルボタン */}
       {placesResults.length > 0 && !isFullscreen && (
@@ -474,8 +506,8 @@ function App() {
           {isDrawerOpen ? '閉じる' : `検索結果 (${placesResults.length})`}
         </button>
       )}
-      {/* モバイル用ピンドロワートグルボタン */}
-      {pins.length > 0 && !isFullscreen && (
+      {/* モバイル用ピンドロワートグルボタン - ピンモードONの時のみ表示 */}
+      {pinMode && pins.length > 0 && !isFullscreen && (
         <button className="pin-drawer-toggle-btn" onClick={togglePinDrawer}>
           {isPinDrawerOpen ? '閉じる' : `ピン一覧 (${pins.length})`}
         </button>
