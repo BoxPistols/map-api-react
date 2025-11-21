@@ -454,6 +454,8 @@ a {
   /* 全画面時は閉じるボタンは必ず表示 */
   .map-fullscreen-btn {
     display: inline-block !important;
+    pointer-events: auto !important; // 確実にクリック可能にする
+    z-index: 99999 !important; // 地図要素より確実に上に表示
   }
 }
 
@@ -462,7 +464,7 @@ a {
   position: absolute;
   top: 10px;
   right: 10px;
-  z-index: 10000;
+  z-index: 99999; // 地図要素より確実に上に表示
   width: 44px;
   height: 44px;
   border: none;
@@ -477,6 +479,7 @@ a {
   touch-action: manipulation; // ダブルタップズームを防ぐ
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  pointer-events: auto; // クリック可能にする
 
   &:hover {
     background: rgba(31, 41, 55, 0.95);
@@ -486,6 +489,11 @@ a {
   &:active {
     transform: translateY(0) scale(0.95);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  // 全画面時はfixedポジションに変更してより確実に上に表示
+  .map-container.fullscreen & {
+    position: fixed;
   }
 
   // デスクトップでは非表示、モバイルのみ表示
