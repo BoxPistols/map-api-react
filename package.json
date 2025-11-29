@@ -26,7 +26,8 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
-    "eslint": "^8.57.0"
+    "eslint": "^8.57.0",
+    "sharp": "^0.34.5"
   },
   "eslintConfig": {
     "extends": "react-app"
