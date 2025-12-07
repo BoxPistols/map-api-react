@@ -544,6 +544,7 @@ function App() {
             places={placesResults}
             onAddPin={handleAddPinFromPlace}
             onClose={handleClosePlacesResults}
+            onCloseDrawer={toggleDrawer}
             isDrawerOpen={isDrawerOpen}
             onFocusPlace={handleFocusPlace}
             isCollapsed={isResultsCollapsed}
@@ -622,6 +623,7 @@ function App() {
             onPinClick={handlePinClick}
             onImportPins={handleImportPins}
             isDrawerOpen={isPinDrawerOpen}
+            onCloseDrawer={togglePinDrawer}
           />
         </div>
       )}
