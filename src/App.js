@@ -31,7 +31,6 @@ function App() {
   })
   const [pinMode, setPinMode] = useState(false)
   const [placesResults, setPlacesResults] = useState([])
-  const [isFullscreen, setIsFullscreen] = useState(false)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [isResultsCollapsed, setIsResultsCollapsed] = useState(false)
   const [isPinDrawerOpen, setIsPinDrawerOpen] = useState(false)
@@ -44,6 +43,9 @@ function App() {
   const [isRouteDetailsOpen, setIsRouteDetailsOpen] = useState(false)
   const [isLoadingRoute, setIsLoadingRoute] = useState(false)
   const [isControlAreaOpen, setIsControlAreaOpen] = useState(true) // モバイル用control-areaトグル
+  const [searchNotification, setSearchNotification] = useState(null) // 検索結果通知
+  const [pinNotification, setPinNotification] = useState(null) // ピン追加通知
+  const [pendingPinLocation, setPendingPinLocation] = useState(null) // 確認待ちピン位置
 
   const setErrorMessage = (message) => {
     setState({
@@ -77,6 +79,9 @@ function App() {
           ) {
             setPlacesResults(results)
             setIsDrawerOpen(true) // モバイルでドロワーを自動的に開く
+            // モバイルで通知を表示
+            setSearchNotification(`${results.length}件の検索結果`)
+            setTimeout(() => setSearchNotification(null), 3000)
             // 検索履歴を保存
             saveSearchHistory(place, 'places', results)
             // 最初の結果を地図の中心に設定
@@ -142,6 +147,13 @@ function App() {
     }
   }
 
+  // バイブレーションフィードバック
+  const vibrate = useCallback((pattern = [50]) => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(pattern)
+    }
+  }, [])
+
   // ピン追加ヘルパー関数
   const addPin = useCallback((pinDetails) => {
     const newPin = {
@@ -150,7 +162,16 @@ function App() {
     }
     setPins((prevPins) => [...prevPins, newPin])
     savePinHistory(newPin)
+    // バイブレーションとフィードバック
+    vibrate([50, 30, 50])
+    setPinNotification(`ピン ${newPin.address.substring(0, 20)}... を追加`)
+    setTimeout(() => setPinNotification(null), 2500)
     return newPin
+  }, [vibrate])
+
+  // モバイル判定
+  const isMobile = useCallback(() => {
+    return window.innerWidth <= 768 || 'ontouchstart' in window
   }, [])
 
   const handleMapClick = useCallback(
@@ -174,8 +195,15 @@ function App() {
               : `緯度: ${lat.toFixed(6)}, 経度: ${lng.toFixed(6)}`
 
           if (pinMode) {
-            // ピンモード：新しいピンを追加
-            addPin({ lat, lng, address })
+            // ピンモード
+            if (isMobile()) {
+              // モバイル：確認ダイアログを表示
+              vibrate([30])
+              setPendingPinLocation({ lat, lng, address })
+            } else {
+              // デスクトップ：直接追加
+              addPin({ lat, lng, address })
+            }
           } else {
             // 通常モード：stateを更新
             setState({
@@ -190,7 +218,12 @@ function App() {
           // エラーの場合も座標のみ表示
           const address = `緯度: ${lat.toFixed(6)}, 経度: ${lng.toFixed(6)}`
           if (pinMode) {
-            addPin({ lat, lng, address })
+            if (isMobile()) {
+              vibrate([30])
+              setPendingPinLocation({ lat, lng, address })
+            } else {
+              addPin({ lat, lng, address })
+            }
           } else {
             setState({
               address,
@@ -201,8 +234,21 @@ function App() {
           }
         })
     },
-    [pinMode, state.zoom, addPin]
+    [pinMode, state.zoom, addPin, isMobile, vibrate]
   )
+
+  // 確認ダイアログでピン追加を確定
+  const confirmAddPin = useCallback(() => {
+    if (pendingPinLocation) {
+      addPin(pendingPinLocation)
+      setPendingPinLocation(null)
+    }
+  }, [pendingPinLocation, addPin])
+
+  // 確認ダイアログをキャンセル
+  const cancelAddPin = useCallback(() => {
+    setPendingPinLocation(null)
+  }, [])
 
   const removePin = useCallback((id) => {
     setPins((prevPins) => prevPins.filter((pin) => pin.id !== id))
@@ -398,50 +444,17 @@ function App() {
     savePins(pins)
   }, [pins])
 
-  // Fキーで全画面表示切り替え、ESCで全画面解除
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      const isEditableElement = (el) => {
-        if (!el || !el.tagName) return false
-        const tag = el.tagName.toLowerCase()
-        if (el.isContentEditable) return true
-        if (tag === 'input' || tag === 'textarea' || tag === 'select') return true
-        const role = el.getAttribute && el.getAttribute('role')
-        return role === 'textbox' || role === 'combobox'
-      }
-
-      if (event.key.toLowerCase() === 'f') {
-        // フォーム入力中はトグルしない
-        const target = event.target
-        if (isEditableElement(target) || isEditableElement(document.activeElement)) {
-          return
-        }
-        event.preventDefault()
-        setIsFullscreen((prev) => !prev)
-      } else if (event.key === 'Escape' && isFullscreen) {
-        setIsFullscreen(false)
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [isFullscreen])
-
   return (
-    <div className={`App ${isFullscreen ? 'is-fullscreen' : ''}`}>
+    <div className="App">
       {/* モバイル用control-areaトグルボタン */}
-      {!isFullscreen && (
-        <button
-          className="control-area-toggle-btn"
-          onClick={toggleControlArea}
-          aria-label={isControlAreaOpen ? '検索エリアを閉じる' : '検索エリアを開く'}
-        >
-          {isControlAreaOpen ? '▲' : '▼'}
-        </button>
-      )}
-      <div className={`control-area ${isFullscreen ? 'hidden' : ''} ${!isControlAreaOpen ? 'collapsed' : ''}`}>
+      <button
+        className="control-area-toggle-btn"
+        onClick={toggleControlArea}
+        aria-label={isControlAreaOpen ? '検索エリアを閉じる' : '検索エリアを開く'}
+      >
+        {isControlAreaOpen ? '▲' : '▼'}
+      </button>
+      <div className={`control-area ${!isControlAreaOpen ? 'collapsed' : ''}`}>
         <section className="section header-section">
           <a href="/">
             <h1>
@@ -483,9 +496,7 @@ function App() {
           </button>
         </section>
       </div>
-      <section
-        className={`section result-area ${isFullscreen ? 'hidden' : ''}`}
-      >
+      <section className="section result-area">
         <GeoCodeResult
           address={state.address}
           lat={state.lat}
@@ -500,16 +511,30 @@ function App() {
           ×
         </button>
       </section>
+      {/* モバイル用検索結果通知 */}
+      {searchNotification && (
+        <div className="search-notification" role="alert">
+          <span className="notification-icon">📍</span>
+          {searchNotification}
+          <span className="notification-hint">↓ 下にスクロール</span>
+        </div>
+      )}
       {/* モバイル用ドロワートグルボタン */}
-      {placesResults.length > 0 && !isFullscreen && (
-        <button className="drawer-toggle-btn" onClick={toggleDrawer}>
+      {placesResults.length > 0 && (
+        <button
+          className={`drawer-toggle-btn ${searchNotification ? 'pulse' : ''}`}
+          onClick={toggleDrawer}
+        >
           {isDrawerOpen ? '閉じる' : `検索結果 (${placesResults.length})`}
         </button>
       )}
       {/* モバイル用ピンドロワートグルボタン - ピンモードONの時のみ表示 */}
-      {pinMode && pins.length > 0 && !isFullscreen && (
-        <button className="pin-drawer-toggle-btn" onClick={togglePinDrawer}>
-          {isPinDrawerOpen ? '閉じる' : `ピン一覧 (${pins.length})`}
+      {pinMode && (
+        <button
+          className={`pin-drawer-toggle-btn ${pinNotification ? 'pulse' : ''}`}
+          onClick={togglePinDrawer}
+        >
+          {isPinDrawerOpen ? '閉じる' : `ピン (${pins.length})`}
         </button>
       )}
       <div
@@ -546,11 +571,7 @@ function App() {
 
         {/* 中央: マップ */}
         <main className="main-center">
-          <section
-            className={`section last map-container ${
-              isFullscreen ? 'fullscreen' : ''
-            }`}
-          >
+          <section className="section last map-container">
             <Map
               lat={state.lat}
               lng={state.lng}
@@ -558,15 +579,6 @@ function App() {
               pins={pins}
               onMapClick={handleMapClick}
             />
-            <button
-              type="button"
-              className="map-fullscreen-btn"
-              onClick={() => setIsFullscreen((prev) => !prev)}
-              aria-label={isFullscreen ? '全画面を終了' : '全画面で表示'}
-              title={isFullscreen ? '全画面を終了' : '全画面で表示'}
-            >
-              {isFullscreen ? '×' : '⤢'}
-            </button>
           </section>
         </main>
 
@@ -637,6 +649,33 @@ function App() {
               onClose={handleCloseRouteDetails}
             />
           </div>
+        </div>
+      )}
+
+      {/* モバイル用ピン追加確認ダイアログ */}
+      {pendingPinLocation && (
+        <div className="pin-confirm-dialog" role="dialog" aria-modal="true">
+          <div className="pin-confirm-content">
+            <div className="pin-confirm-icon">📍</div>
+            <p className="pin-confirm-text">ここにピンを追加しますか？</p>
+            <p className="pin-confirm-address">{pendingPinLocation.address}</p>
+            <div className="pin-confirm-actions">
+              <button className="pin-confirm-cancel" onClick={cancelAddPin}>
+                キャンセル
+              </button>
+              <button className="pin-confirm-ok" onClick={confirmAddPin}>
+                追加する
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ピン追加通知 */}
+      {pinNotification && (
+        <div className="pin-notification" role="alert">
+          <span className="notification-icon">✓</span>
+          {pinNotification}
         </div>
       )}
     </div>
