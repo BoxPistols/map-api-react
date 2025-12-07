@@ -13,16 +13,12 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 
-  /* モバイルはドロワー化 */
+  /* モバイルはドロワー化（親要素がfixedなので相対位置で） */
   @media screen and (max-width: 768px) {
-    position: fixed;
+    position: relative;
     width: 100%;
     height: 60vh;
     max-height: 500px;
-    top: auto;
-    left: 0;
-    right: 0;
-    bottom: 0;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 12px 12px 0 0;
     box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.3);

@@ -516,7 +516,7 @@ function App() {
         <div className="search-notification" role="alert">
           <span className="notification-icon">📍</span>
           {searchNotification}
-          <span className="notification-hint">↓ 下にスクロール</span>
+          <span className="notification-hint">↓ ボタンをタップ</span>
         </div>
       )}
       {/* モバイル用ドロワートグルボタン */}
@@ -536,6 +536,21 @@ function App() {
         >
           {isPinDrawerOpen ? '閉じる' : `ピン (${pins.length})`}
         </button>
+      )}
+      {/* モバイル用検索結果ドロワー */}
+      {placesResults.length > 0 && (
+        <div className="mobile-places-drawer">
+          <PlacesResults
+            places={placesResults}
+            onAddPin={handleAddPinFromPlace}
+            onClose={handleClosePlacesResults}
+            isDrawerOpen={isDrawerOpen}
+            onFocusPlace={handleFocusPlace}
+            isCollapsed={isResultsCollapsed}
+            onToggleCollapse={toggleResultsCollapse}
+            onShowDetails={handleShowPlaceDetails}
+          />
+        </div>
       )}
       <div
         className={`content-layout holy ${
@@ -596,6 +611,20 @@ function App() {
           </div>
         </aside>
       </div>
+
+      {/* モバイル用ピン一覧ドロワー */}
+      {pinMode && (
+        <div className="mobile-pins-drawer">
+          <PinList
+            pins={pins}
+            onRemovePin={removePin}
+            onClearAllPins={clearAllPins}
+            onPinClick={handlePinClick}
+            onImportPins={handleImportPins}
+            isDrawerOpen={isPinDrawerOpen}
+          />
+        </div>
+      )}
 
       {/* 設定モーダル */}
       <SettingsModal
