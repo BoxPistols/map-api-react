@@ -1,15 +1,12 @@
 .pinsArea {
   margin-bottom: 0.8rem;
 
+  /* モバイルはドロワー化（親要素がfixedなので相対位置で） */
   @media screen and (max-width: 768px) {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    position: relative;
     width: 100%;
     height: 60vh;
     max-height: 500px;
-    z-index: 9990;
     transform: translateY(100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: block;

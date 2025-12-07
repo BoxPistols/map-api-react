@@ -657,6 +657,34 @@ a {
   overflow-y: auto;
 }
 
+// モバイル用検索結果ドロワー（sidebar-leftの外に配置）
+.mobile-places-drawer {
+  display: none;
+
+  @media screen and (max-width: 768px) {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9990;
+  }
+}
+
+// モバイル用ピン一覧ドロワー（sidebar-rightの外に配置）
+.mobile-pins-drawer {
+  display: none;
+
+  @media screen and (max-width: 768px) {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9989;
+  }
+}
+
 // モバイル用検索結果通知
 .search-notification {
   position: fixed;
