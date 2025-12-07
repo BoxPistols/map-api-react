@@ -22,7 +22,7 @@ const formatAddress = (address) => {
   return formatted.trim()
 }
 
-const PlacesResults = React.memo(({ places, onAddPin, onClose, isDrawerOpen, onFocusPlace, isCollapsed, onToggleCollapse, onShowDetails }) => {
+const PlacesResults = React.memo(({ places, onAddPin, onClose, isDrawerOpen, onFocusPlace, isCollapsed, onToggleCollapse, onShowDetails, onCloseDrawer }) => {
   if (!places || places.length === 0) {
     return null
   }
@@ -57,12 +57,21 @@ const PlacesResults = React.memo(({ places, onAddPin, onClose, isDrawerOpen, onF
 
   return (
     <section className={`section ${Style.placesArea} ${isDrawerOpen ? Style.open : ''} ${isCollapsed ? Style.collapsed : ''}`}>
+      {/* モバイル用ドラッグハンドル */}
+      {onCloseDrawer && (
+        <div className={Style.drawerHandle} onClick={onCloseDrawer}>
+          <div className={Style.handleBar}></div>
+          <span className={Style.handleText}>タップして閉じる</span>
+        </div>
+      )}
       <div className={Style.container}>
         <div className={Style.header}>
           <h3 className={Style.title}>検索結果 ({places.length}件)</h3>
-          <button onClick={onToggleCollapse} className={Style.closeButton} aria-expanded={!isCollapsed}>
-            {isCollapsed ? '開く' : '閉じる'}
-          </button>
+          {onCloseDrawer && (
+            <button onClick={onCloseDrawer} className={Style.drawerCloseBtn}>
+              ✕
+            </button>
+          )}
           <button onClick={onClose} className={Style.closeButton}>クリア</button>
         </div>
         <ul className={Style.placesList}>
@@ -199,6 +208,7 @@ PlacesResults.propTypes = {
   isCollapsed: PropTypes.bool,
   onToggleCollapse: PropTypes.func,
   onShowDetails: PropTypes.func,
+  onCloseDrawer: PropTypes.func,
 }
 
 export default PlacesResults

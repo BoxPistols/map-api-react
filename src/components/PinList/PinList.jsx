@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Style from './PinList.module.scss'
 import { exportAllData, importData } from '../../utils/storage'
 
-const PinList = React.memo(({ pins, onRemovePin, onClearAllPins, onPinClick, onImportPins, isDrawerOpen }) => {
+const PinList = React.memo(({ pins, onRemovePin, onClearAllPins, onPinClick, onImportPins, isDrawerOpen, onCloseDrawer }) => {
   const fileInputRef = useRef(null)
   // JSONエクスポート
   const exportToJSON = () => {
@@ -148,9 +148,21 @@ const PinList = React.memo(({ pins, onRemovePin, onClearAllPins, onPinClick, onI
 
   return (
     <section className={`section ${Style.pinsArea} ${isDrawerOpen ? Style.open : ''}`}>
+      {/* モバイル用ドラッグハンドル */}
+      {onCloseDrawer && (
+        <div className={Style.drawerHandle} onClick={onCloseDrawer}>
+          <div className={Style.handleBar}></div>
+          <span className={Style.handleText}>タップして閉じる</span>
+        </div>
+      )}
       <div className={Style.container}>
         <div className={Style.header}>
           <h3 className={Style.title}>ピン一覧 ({pins.length})</h3>
+          {onCloseDrawer && (
+            <button onClick={onCloseDrawer} className={Style.drawerCloseBtn}>
+              ✕
+            </button>
+          )}
           <div className={Style.actions}>
             <button
               onClick={exportToJSON}
@@ -245,6 +257,7 @@ PinList.propTypes = {
   onPinClick: PropTypes.func.isRequired,
   onImportPins: PropTypes.func,
   isDrawerOpen: PropTypes.bool,
+  onCloseDrawer: PropTypes.func,
 }
 
 export default PinList
