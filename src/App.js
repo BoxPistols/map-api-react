@@ -553,7 +553,7 @@ function App() {
       )}
       {/* モバイル用検索結果ドロワー */}
       {placesResults.length > 0 && (
-        <div className="mobile-places-drawer">
+        <div className={`mobile-places-drawer ${isDrawerOpen ? 'drawer-open' : ''}`}>
           <PlacesResults
             places={placesResults}
             onAddPin={handleAddPinFromPlace}
@@ -629,7 +629,7 @@ function App() {
 
       {/* モバイル用ピン一覧ドロワー */}
       {pinMode && (
-        <div className="mobile-pins-drawer">
+        <div className={`mobile-pins-drawer ${isPinDrawerOpen ? 'drawer-open' : ''}`}>
           <PinList
             pins={pins}
             onRemovePin={removePin}
