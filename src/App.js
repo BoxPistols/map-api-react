@@ -18,6 +18,11 @@ const API_KEY = process.env.REACT_APP_API_KEY
 const GEOCODE_ENDPOINT = 'https://maps.googleapis.com/maps/api/geocode/json'
 const PIN_CLICK_ZOOM_LEVEL = 18 // ピンクリック時のズームレベル
 
+// 通知表示時間（ミリ秒）
+const SEARCH_NOTIFICATION_DURATION = 2700
+const PIN_NOTIFICATION_DURATION = 2200
+const FADE_OUT_ANIMATION_DURATION = 300
+
 function App() {
   const [state, setState] = useState({
     address: '東京タワー',
@@ -79,9 +84,12 @@ function App() {
           ) {
             setPlacesResults(results)
             setIsDrawerOpen(true) // モバイルでドロワーを自動的に開く
-            // モバイルで通知を表示
-            setSearchNotification(`${results.length}件の検索結果`)
-            setTimeout(() => setSearchNotification(null), 3000)
+            // モバイルで通知を表示（フェードアウトクラス追加後に削除）
+            setSearchNotification({ text: `${results.length}件の検索結果`, fadeOut: false })
+            setTimeout(() => {
+              setSearchNotification(prev => prev ? { ...prev, fadeOut: true } : null)
+              setTimeout(() => setSearchNotification(null), FADE_OUT_ANIMATION_DURATION)
+            }, SEARCH_NOTIFICATION_DURATION)
             // 検索履歴を保存
             saveSearchHistory(place, 'places', results)
             // 最初の結果を地図の中心に設定
@@ -164,15 +172,21 @@ function App() {
     savePinHistory(newPin)
     // バイブレーションとフィードバック
     vibrate([50, 30, 50])
-    setPinNotification(`ピン ${newPin.address.substring(0, 20)}... を追加`)
-    setTimeout(() => setPinNotification(null), 2500)
+    const shortAddress = newPin.address.length > 20
+      ? `${newPin.address.substring(0, 20)}...`
+      : newPin.address
+    setPinNotification({ text: `ピン ${shortAddress} を追加`, fadeOut: false })
+    setTimeout(() => {
+      setPinNotification(prev => prev ? { ...prev, fadeOut: true } : null)
+      setTimeout(() => setPinNotification(null), FADE_OUT_ANIMATION_DURATION)
+    }, PIN_NOTIFICATION_DURATION)
     return newPin
   }, [vibrate])
 
-  // モバイル判定
-  const isMobile = useCallback(() => {
+  // モバイル判定（window.innerWidthに依存するためuseCallbackを使わない）
+  const isMobile = () => {
     return window.innerWidth <= 768 || 'ontouchstart' in window
-  }, [])
+  }
 
   const handleMapClick = useCallback(
     (event) => {
@@ -234,7 +248,7 @@ function App() {
           }
         })
     },
-    [pinMode, state.zoom, addPin, isMobile, vibrate]
+    [pinMode, state.zoom, addPin, vibrate]
   )
 
   // 確認ダイアログでピン追加を確定
@@ -513,9 +527,9 @@ function App() {
       </section>
       {/* モバイル用検索結果通知 */}
       {searchNotification && (
-        <div className="search-notification" role="alert">
+        <div className={`search-notification ${searchNotification.fadeOut ? 'fade-out' : ''}`} role="alert">
           <span className="notification-icon">📍</span>
-          {searchNotification}
+          {searchNotification.text}
           <span className="notification-hint">↓ ボタンをタップ</span>
         </div>
       )}
@@ -704,9 +718,9 @@ function App() {
 
       {/* ピン追加通知 */}
       {pinNotification && (
-        <div className="pin-notification" role="alert">
+        <div className={`pin-notification ${pinNotification.fadeOut ? 'fade-out' : ''}`} role="alert">
           <span className="notification-icon">✓</span>
-          {pinNotification}
+          {pinNotification.text}
         </div>
       )}
     </div>

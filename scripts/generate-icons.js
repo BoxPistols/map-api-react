@@ -9,13 +9,13 @@ const svgPath = path.join(publicDir, 'icon.svg');
 const svgBuffer = fs.readFileSync(svgPath);
 
 // Icon sizes to generate
+// Note: apple-touch-icon.png at 180px is the standard size, iOS scales for smaller devices
 const sizes = [
   { name: 'favicon-16x16.png', size: 16 },
   { name: 'favicon-32x32.png', size: 32 },
   { name: 'apple-touch-icon.png', size: 180 },
   { name: 'apple-touch-icon-120x120.png', size: 120 },
   { name: 'apple-touch-icon-152x152.png', size: 152 },
-  { name: 'apple-touch-icon-180x180.png', size: 180 },
   { name: 'android-chrome-192x192.png', size: 192 },
   { name: 'android-chrome-512x512.png', size: 512 },
   { name: 'logo192.png', size: 192 },
