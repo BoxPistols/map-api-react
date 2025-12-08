@@ -699,15 +699,18 @@ a {
   border-radius: 12px;
   font-size: 1rem;
   font-weight: 700;
-  display: flex;
+  display: none;
   align-items: center;
   gap: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  animation: notificationIn 0.3s ease-out, notificationOut 0.3s ease-in 2.7s forwards;
-  display: none;
+  animation: notificationIn 0.3s ease-out;
 
   @media screen and (max-width: 768px) {
     display: flex;
+  }
+
+  &.fade-out {
+    animation: notificationOut 0.3s ease-in forwards;
   }
 
   .notification-icon {
@@ -885,7 +888,11 @@ a {
   align-items: center;
   gap: 10px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
-  animation: pinNotificationIn 0.3s ease-out, pinNotificationOut 0.3s ease-in 2.2s forwards;
+  animation: pinNotificationIn 0.3s ease-out;
+
+  &.fade-out {
+    animation: pinNotificationOut 0.3s ease-in forwards;
+  }
 
   .notification-icon {
     font-size: 1.1rem;
