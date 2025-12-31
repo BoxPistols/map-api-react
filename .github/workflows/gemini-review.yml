@@ -1,0 +1,276 @@
+name: Gemini AI Review
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  gemini-review:
+    # PRコメントで /review または /summary が含まれる場合のみ実行
+    if: |
+      github.event.issue.pull_request &&
+      (contains(github.event.comment.body, '/review') || contains(github.event.comment.body, '/summary'))
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check command type
+        id: command
+        run: |
+          COMMENT="${{ github.event.comment.body }}"
+          if [[ "$COMMENT" == *"/review"* ]]; then
+            echo "type=review" >> $GITHUB_OUTPUT
+          elif [[ "$COMMENT" == *"/summary"* ]]; then
+            echo "type=summary" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Add reaction to comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: 'eyes'
+            });
+
+      - name: Get PR details
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            return {
+              title: pr.data.title,
+              body: pr.data.body || '',
+              head: pr.data.head.sha,
+              base: pr.data.base.sha
+            };
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get PR diff
+        id: diff
+        run: |
+          PR_NUMBER=${{ github.event.issue.number }}
+          # Get the diff via GitHub API
+          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3.diff" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUMBER}" > pr_diff.txt
+
+          # Truncate if too large (Gemini has token limits)
+          if [ $(wc -c < pr_diff.txt) -gt 30000 ]; then
+            head -c 30000 pr_diff.txt > pr_diff_truncated.txt
+            echo "...[diff truncated due to size]" >> pr_diff_truncated.txt
+            mv pr_diff_truncated.txt pr_diff.txt
+          fi
+
+      - name: Get changed files list
+        id: files
+        run: |
+          PR_NUMBER=${{ github.event.issue.number }}
+          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUMBER}/files" | \
+            jq -r '.[].filename' > changed_files.txt
+
+      - name: Call Gemini API for Review
+        if: steps.command.outputs.type == 'review'
+        id: gemini-review
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          PR_TITLE=$(echo '${{ fromJson(steps.pr.outputs.result).title }}' | jq -Rs .)
+          PR_BODY=$(echo '${{ fromJson(steps.pr.outputs.result).body }}' | jq -Rs .)
+          DIFF_CONTENT=$(cat pr_diff.txt | jq -Rs .)
+          FILES_LIST=$(cat changed_files.txt | jq -Rs .)
+
+          # Create prompt for code review
+          PROMPT=$(cat <<'PROMPT_END'
+          あなたは経験豊富なシニアソフトウェアエンジニアです。以下のPull Requestをレビューしてください。
+
+          ## レビュー観点
+          1. **コード品質**: 可読性、保守性、DRY原則
+          2. **バグ・問題点**: 潜在的なバグ、エッジケース、エラーハンドリング
+          3. **セキュリティ**: XSS、インジェクション、認証・認可の問題
+          4. **パフォーマンス**: 非効率なコード、N+1問題、メモリリーク
+          5. **ベストプラクティス**: React/TypeScriptのベストプラクティス準拠
+
+          ## 出力形式
+          以下の形式でレビュー結果を出力してください：
+
+          ### 🔍 概要
+          [変更の概要を1-2文で]
+
+          ### ✅ 良い点
+          - [良い点をリスト]
+
+          ### ⚠️ 改善提案
+          - **ファイル名:行番号** - [問題点と改善案]
+
+          ### 🚨 重要な問題（あれば）
+          - [重大なバグやセキュリティ問題]
+
+          ### 📝 その他コメント
+          - [任意のコメント]
+          PROMPT_END
+          )
+
+          # Build JSON payload
+          JSON_PAYLOAD=$(jq -n \
+            --arg prompt "$PROMPT" \
+            --argjson title "$PR_TITLE" \
+            --argjson body "$PR_BODY" \
+            --argjson diff "$DIFF_CONTENT" \
+            --argjson files "$FILES_LIST" \
+            '{
+              contents: [{
+                parts: [{
+                  text: ($prompt + "\n\n## PR Title\n" + $title + "\n\n## PR Description\n" + $body + "\n\n## Changed Files\n" + $files + "\n\n## Diff\n```diff\n" + $diff + "\n```")
+                }]
+              }],
+              generationConfig: {
+                temperature: 0.3,
+                maxOutputTokens: 4096
+              }
+            }')
+
+          # Call Gemini API
+          RESPONSE=$(curl -s -X POST \
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "$JSON_PAYLOAD")
+
+          # Extract text from response
+          REVIEW_TEXT=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // "レビューの生成に失敗しました。"')
+
+          # Save to file for next step
+          echo "$REVIEW_TEXT" > review_result.txt
+
+      - name: Call Gemini API for Summary
+        if: steps.command.outputs.type == 'summary'
+        id: gemini-summary
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          PR_TITLE=$(echo '${{ fromJson(steps.pr.outputs.result).title }}' | jq -Rs .)
+          PR_BODY=$(echo '${{ fromJson(steps.pr.outputs.result).body }}' | jq -Rs .)
+          DIFF_CONTENT=$(cat pr_diff.txt | jq -Rs .)
+          FILES_LIST=$(cat changed_files.txt | jq -Rs .)
+
+          # Create prompt for summary
+          PROMPT=$(cat <<'PROMPT_END'
+          あなたは経験豊富なテクニカルライターです。以下のPull Requestの変更内容を簡潔にサマリーしてください。
+
+          ## 出力形式
+
+          ### 📋 変更サマリー
+          [このPRが何を達成するか、1-2文で]
+
+          ### 📁 変更ファイル概要
+          | ファイル | 変更内容 |
+          |---------|---------|
+          | [ファイル名] | [簡潔な説明] |
+
+          ### 🔧 主な変更点
+          1. [変更点1]
+          2. [変更点2]
+          3. [変更点3]
+
+          ### 💡 影響範囲
+          - [この変更が影響する機能やコンポーネント]
+
+          ### ✅ テスト観点
+          - [この変更をテストする際に確認すべきポイント]
+          PROMPT_END
+          )
+
+          # Build JSON payload
+          JSON_PAYLOAD=$(jq -n \
+            --arg prompt "$PROMPT" \
+            --argjson title "$PR_TITLE" \
+            --argjson body "$PR_BODY" \
+            --argjson diff "$DIFF_CONTENT" \
+            --argjson files "$FILES_LIST" \
+            '{
+              contents: [{
+                parts: [{
+                  text: ($prompt + "\n\n## PR Title\n" + $title + "\n\n## PR Description\n" + $body + "\n\n## Changed Files\n" + $files + "\n\n## Diff\n```diff\n" + $diff + "\n```")
+                }]
+              }],
+              generationConfig: {
+                temperature: 0.3,
+                maxOutputTokens: 2048
+              }
+            }')
+
+          # Call Gemini API
+          RESPONSE=$(curl -s -X POST \
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "$JSON_PAYLOAD")
+
+          # Extract text from response
+          SUMMARY_TEXT=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // "サマリーの生成に失敗しました。"')
+
+          # Save to file for next step
+          echo "$SUMMARY_TEXT" > review_result.txt
+
+      - name: Post result to PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const result = fs.readFileSync('review_result.txt', 'utf8');
+            const commandType = '${{ steps.command.outputs.type }}';
+            const icon = commandType === 'review' ? '🤖' : '📝';
+            const title = commandType === 'review' ? 'Gemini Code Review' : 'Gemini PR Summary';
+
+            const body = `## ${icon} ${title}
+
+            ${result}
+
+            ---
+            <sub>Powered by Gemini 2.0 Flash | Triggered by \`/${commandType}\` command</sub>`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });
+
+      - name: Add success reaction
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: 'rocket'
+            });
+
+      - name: Add failure reaction
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: 'confused'
+            });
