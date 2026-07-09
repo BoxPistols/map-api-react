@@ -7,7 +7,13 @@ import {
   clearAllData,
 } from '../../utils/storage'
 
-const SettingsModal = ({ isOpen, onClose, onRestorePin }) => {
+const SettingsModal = ({
+  isOpen,
+  onClose,
+  onRestorePin,
+  isTestMode,
+  onToggleTestMode,
+}) => {
   const [activeTab, setActiveTab] = useState('pins') // 'pins' or 'searches'
   const [pinHistory, setPinHistory] = useState([])
   const [searchHistory, setSearchHistory] = useState([])
@@ -302,6 +308,16 @@ const SettingsModal = ({ isOpen, onClose, onRestorePin }) => {
               日付でグループ化
             </label>
           </div>
+          <div className={Style.modeControl}>
+            <div className={Style.modeLabel}>APIモード: {isTestMode ? 'TEST' : 'LIVE'}</div>
+            <button
+              className={`${Style.modeToggleBtn} ${isTestMode ? Style.active : ''}`}
+              onClick={onToggleTestMode}
+              type="button"
+            >
+              {isTestMode ? 'テストモード OFF' : 'テストモード ON'}
+            </button>
+          </div>
           <div className={Style.actions}>
             <button onClick={handleClearAllHistory} className={Style.clearHistoryBtn}>
               履歴をクリア
@@ -330,6 +346,8 @@ SettingsModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onRestorePin: PropTypes.func.isRequired,
+  isTestMode: PropTypes.bool.isRequired,
+  onToggleTestMode: PropTypes.func.isRequired,
 }
 
 export default SettingsModal

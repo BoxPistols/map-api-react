@@ -4,6 +4,7 @@ const STORAGE_KEYS = {
   PINS: 'ggmap_pins',
   SEARCH_HISTORY: 'ggmap_search_history',
   PIN_HISTORY: 'ggmap_pin_history',
+  TEST_MODE: 'ggmap_test_mode',
 }
 
 const MAX_HISTORY_ITEMS = 50 // 履歴の最大保存件数
@@ -157,6 +158,31 @@ export const clearAllData = () => {
     return true
   } catch (error) {
     console.error('Failed to clear data:', error)
+    return false
+  }
+}
+
+/**
+ * テストモード設定を保存
+ */
+export const saveTestMode = (enabled) => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.TEST_MODE, enabled ? '1' : '0')
+    return true
+  } catch (error) {
+    console.error('Failed to save test mode to localStorage:', error)
+    return false
+  }
+}
+
+/**
+ * テストモード設定を読み込み
+ */
+export const loadTestMode = () => {
+  try {
+    return localStorage.getItem(STORAGE_KEYS.TEST_MODE) === '1'
+  } catch (error) {
+    console.error('Failed to load test mode from localStorage:', error)
     return false
   }
 }

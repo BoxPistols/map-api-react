@@ -603,6 +603,39 @@ a {
   align-items: center;
 }
 
+.mode-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+
+  &.live {
+    background: rgba(37, 99, 235, 0.35);
+  }
+
+  &.test {
+    background: rgba(245, 158, 11, 0.75);
+    color: #111827;
+  }
+}
+
+.mock-mode-note {
+  align-self: center;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #111827;
+  background: rgba(245, 158, 11, 0.85);
+}
+
 // 経路検索ボタン
 .route-btn {
   padding: 8px 16px;

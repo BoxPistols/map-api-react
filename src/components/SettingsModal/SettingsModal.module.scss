@@ -181,6 +181,40 @@
   gap: 0.75rem;
 }
 
+.modeControl {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.modeLabel {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.modeToggleBtn {
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(245, 158, 11, 0.25);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+
+  &:hover {
+    background: rgba(245, 158, 11, 0.45);
+    transform: translateY(-1px);
+  }
+
+  &.active {
+    background: rgba(244, 67, 54, 0.35);
+    border-color: rgba(244, 67, 54, 0.5);
+  }
+}
+
 .clearHistoryBtn,
 .dangerBtn {
   padding: 0.5rem 1rem;

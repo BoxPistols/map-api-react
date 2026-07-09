@@ -289,6 +289,52 @@ Google Cloud Console で以下を有効にしてください。
 
 ---
 
+## テストモード（Mock/Test mode）
+
+Google API の無料枠や課金を消費せずに、主要 UI と API 連携方針を確認できるように **TEST モード** を追加しています。
+
+### 使い方
+
+1. 画面右上のモード表示（`LIVE` / `TEST`）を確認
+2. 歯車ボタンから設定モーダルを開く
+3. `テストモード ON / OFF` で切り替え
+
+設定は `localStorage` に保存されるため、再読み込み後も維持されます。
+
+### TEST モードでモック化される機能
+
+- 住所検索（Geocoding API 相当）
+- 場所検索（Places Text Search 相当）
+- 場所詳細（Places Details 相当）
+- 地図クリック時の住所取得（逆ジオコーディング相当）
+
+また TEST モードでは Google Maps を使わず、`MockMap` コンポーネントで地図領域を表示します。
+
+### 実装ファイル（対応箇所）
+
+- `src/App.js`
+  - モード状態管理 (`isTestMode`)
+  - LIVE/TEST バッジ表示
+  - API 呼び出しの切り替え
+- `src/services/mapApiGateway.js`
+  - 実 API / モック API の統合切り替え窓口
+- `src/mocks/googleApiMocks.js`
+  - 住所検索、場所検索、詳細、逆ジオコーディングのモックレスポンス
+- `src/components/Map/MockMap.jsx`
+  - TEST モード用のモック地図 UI
+- `src/components/SettingsModal/SettingsModal.jsx`
+  - テストモード切り替え UI
+- `src/utils/storage.js`
+  - テストモード設定の保存・読込
+
+### 開発チーム向け確認ポイント
+
+- `TEST` で検索・詳細・逆ジオコードが Google API なしで動くか
+- `LIVE` に戻した際に既存動作へ復帰するか
+- モード切り替え後に再読み込みしても設定が保持されるか
+
+---
+
 ## 関連ドキュメント
 
 - `docs/ARCHITECTURE.md`
