@@ -1,21 +1,31 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import axios from 'axios'
 import './App.scss'
 import SearchForm from './components/SearchForm/SearchForm'
 import GeoCodeResult from './components/GeoCodeResult/GeoCodeResult'
 import Map from './components/Map/Map'
+import MockMap from './components/Map/MockMap'
 import PinList from './components/PinList/PinList'
 import PlacesResults from './components/PlacesResults/PlacesResults'
 import SettingsModal from './components/SettingsModal/SettingsModal'
 import PlaceDetail from './components/PlaceDetail/PlaceDetail'
 import RouteSearch from './components/Route/RouteSearch'
 import RouteDetails from './components/Route/RouteDetails'
-import { savePins, loadPins, savePinHistory, saveSearchHistory } from './utils/storage'
-import { getPlaceDetails } from './services/places'
+import {
+  savePins,
+  loadPins,
+  savePinHistory,
+  saveSearchHistory,
+  loadTestMode,
+  saveTestMode,
+} from './utils/storage'
 import { getMultipleDirections, compareRoutes } from './services/directions'
-
-const API_KEY = process.env.REACT_APP_API_KEY
-const GEOCODE_ENDPOINT = 'https://maps.googleapis.com/maps/api/geocode/json'
+import {
+  extractLatLng,
+  geocodeAddress,
+  reverseGeocode,
+  searchPlacesByText,
+  fetchPlaceDetails,
+} from './services/mapApiGateway'
 const PIN_CLICK_ZOOM_LEVEL = 18 // ピンクリック時のズームレベル
 
 // 通知表示時間（ミリ秒）
@@ -51,6 +61,7 @@ function App() {
   const [searchNotification, setSearchNotification] = useState(null) // 検索結果通知
   const [pinNotification, setPinNotification] = useState(null) // ピン追加通知
   const [pendingPinLocation, setPendingPinLocation] = useState(null) // 確認待ちピン位置
+  const [isTestMode, setIsTestMode] = useState(() => loadTestMode())
 
   const setErrorMessage = (message) => {
     setState({
@@ -61,97 +72,77 @@ function App() {
     })
   }
 
-  const handlePlaceSubmit = (place, searchType = 'geocode') => {
+  const showTimedNotification = useCallback((setNotification, payload, duration) => {
+    setNotification({ ...payload, fadeOut: false })
+    setTimeout(() => {
+      setNotification((prev) => {
+        if (!prev) return null
+        return { ...prev, fadeOut: true }
+      })
+      setTimeout(() => setNotification(null), FADE_OUT_ANIMATION_DURATION)
+    }, duration)
+  }, [])
+
+  const handlePlaceSubmit = async (place, searchType = 'geocode') => {
     if (searchType === 'places') {
-      // Places API Text Search（自然言語検索）
-      // google.maps.places.PlacesServiceを使用（CORS回避）
-      if (window.google && window.google.maps && window.google.maps.places) {
-        const service = new window.google.maps.places.PlacesService(
-          document.createElement('div')
-        )
-
-        const request = {
-          query: place,
-          language: 'ja',
+      try {
+        const results = await searchPlacesByText(place, isTestMode)
+        if (results && results.length > 0) {
+          setPlacesResults(results)
+          setIsDrawerOpen(true) // モバイルでドロワーを自動的に開く
+          // モバイルで通知を表示（フェードアウトクラス追加後に削除）
+          showTimedNotification(
+            setSearchNotification,
+            { text: `${results.length}件の検索結果` },
+            SEARCH_NOTIFICATION_DURATION
+          )
+          // 検索履歴を保存
+          saveSearchHistory(place, 'places', results)
+          // 最初の結果を地図の中心に設定
+          const firstResult = results[0]
+          const location = extractLatLng(firstResult.geometry.location)
+          setState({
+            address: firstResult.formatted_address || firstResult.name,
+            lat: location.lat,
+            lng: location.lng,
+            zoom: 16,
+          })
+        } else {
+          setPlacesResults([])
+          setErrorMessage('見つかりませんでした、再度検索してください')
         }
-
-        service.textSearch(request, (results, status) => {
-          console.log('Places API Results:', results, status)
-          if (
-            status === window.google.maps.places.PlacesServiceStatus.OK &&
-            results &&
-            results.length > 0
-          ) {
-            setPlacesResults(results)
-            setIsDrawerOpen(true) // モバイルでドロワーを自動的に開く
-            // モバイルで通知を表示（フェードアウトクラス追加後に削除）
-            setSearchNotification({ text: `${results.length}件の検索結果`, fadeOut: false })
-            setTimeout(() => {
-              setSearchNotification(prev => prev ? { ...prev, fadeOut: true } : null)
-              setTimeout(() => setSearchNotification(null), FADE_OUT_ANIMATION_DURATION)
-            }, SEARCH_NOTIFICATION_DURATION)
-            // 検索履歴を保存
-            saveSearchHistory(place, 'places', results)
-            // 最初の結果を地図の中心に設定
-            const firstResult = results[0]
-            setState({
-              address: firstResult.formatted_address || firstResult.name,
-              lat: firstResult.geometry.location.lat(),
-              lng: firstResult.geometry.location.lng(),
-              zoom: 16,
-            })
-          } else if (
-            status ===
-            window.google.maps.places.PlacesServiceStatus.ZERO_RESULTS
-          ) {
-            setPlacesResults([])
-            setErrorMessage('見つかりませんでした、再度検索してください')
-          } else {
-            setPlacesResults([])
-            setErrorMessage('エラーが発生しました')
-          }
-        })
-      } else {
+      } catch (error) {
         setPlacesResults([])
-        setErrorMessage('Places APIの読み込みに失敗しました')
+        setErrorMessage('エラーが発生しました')
       }
     } else {
       // Geocoding API（通常の住所検索）
-      axios
-        .get(GEOCODE_ENDPOINT, {
-          params: {
-            address: place,
-            key: API_KEY,
-          },
-        })
-        .then((results) => {
-          console.log(results)
-          const data = results.data
-          const result = results.data.results[0]
-          switch (data.status) {
-            case 'OK': {
-              const location = result.geometry.location
-              setState({
-                address: result.formatted_address,
-                lat: location.lat,
-                lng: location.lng,
-                zoom: 16,
-              })
-              setPlacesResults([]) // 通常検索時は結果をクリア
-              break
-            }
-            case 'ZERO_RESULTS': {
-              setErrorMessage('見つかりませんでした、再度検索してください')
-              break
-            }
-            default: {
-              setErrorMessage('エラーが発生しました')
-            }
+      try {
+        const data = await geocodeAddress(place, isTestMode)
+        const result = data.results[0]
+        switch (data.status) {
+          case 'OK': {
+            const location = extractLatLng(result.geometry.location)
+            setState({
+              address: result.formatted_address,
+              lat: location.lat,
+              lng: location.lng,
+              zoom: 16,
+            })
+            setPlacesResults([]) // 通常検索時は結果をクリア
+            break
           }
-        })
-        .catch((err) => {
-          setErrorMessage('通信に失敗しました')
-        })
+          case 'ZERO_RESULTS': {
+            setErrorMessage('見つかりませんでした、再度検索してください')
+            break
+          }
+          default: {
+            setErrorMessage('エラーが発生しました')
+          }
+        }
+      } catch (error) {
+        setErrorMessage('通信に失敗しました')
+      }
     }
   }
 
@@ -175,13 +166,13 @@ function App() {
     const shortAddress = newPin.address.length > 20
       ? `${newPin.address.substring(0, 20)}...`
       : newPin.address
-    setPinNotification({ text: `ピン ${shortAddress} を追加`, fadeOut: false })
-    setTimeout(() => {
-      setPinNotification(prev => prev ? { ...prev, fadeOut: true } : null)
-      setTimeout(() => setPinNotification(null), FADE_OUT_ANIMATION_DURATION)
-    }, PIN_NOTIFICATION_DURATION)
+    showTimedNotification(
+      setPinNotification,
+      { text: `ピン ${shortAddress} を追加` },
+      PIN_NOTIFICATION_DURATION
+    )
     return newPin
-  }, [vibrate])
+  }, [vibrate, showTimedNotification])
 
   // モバイル判定（window.innerWidthに依存するためuseCallbackを使わない）
   const isMobile = () => {
@@ -194,15 +185,9 @@ function App() {
       const lng = event.latLng.lng()
 
       // 逆ジオコーディングで住所を取得
-      axios
-        .get(GEOCODE_ENDPOINT, {
-          params: {
-            latlng: `${lat},${lng}`,
-            key: API_KEY,
-          },
-        })
+      reverseGeocode(lat, lng, isTestMode)
         .then((results) => {
-          const data = results.data
+          const data = results
           const address =
             data.status === 'OK' && data.results[0]
               ? data.results[0].formatted_address
@@ -248,7 +233,7 @@ function App() {
           }
         })
     },
-    [pinMode, state.zoom, addPin, vibrate]
+    [pinMode, state.zoom, addPin, vibrate, isTestMode]
   )
 
   // 確認ダイアログでピン追加を確定
@@ -295,7 +280,7 @@ function App() {
     setIsDetailPanelOpen(true)
 
     try {
-      const details = await getPlaceDetails(placeId)
+      const details = await fetchPlaceDetails(placeId, isTestMode)
       setPlaceDetails(details)
     } catch (error) {
       console.error('Place details fetch error:', error)
@@ -304,7 +289,7 @@ function App() {
     } finally {
       setIsLoadingDetails(false)
     }
-  }, [])
+  }, [isTestMode])
 
   // 詳細パネルを閉じる
   const handleClosePlaceDetails = useCallback(() => {
@@ -458,6 +443,14 @@ function App() {
     savePins(pins)
   }, [pins])
 
+  useEffect(() => {
+    saveTestMode(isTestMode)
+  }, [isTestMode])
+
+  const toggleTestMode = useCallback(() => {
+    setIsTestMode((prev) => !prev)
+  }, [])
+
   return (
     <div className="App">
       {/* モバイル用control-areaトグルボタン */}
@@ -482,6 +475,9 @@ function App() {
             </h1>
           </a>
           <div className="header-actions">
+            <span className={`mode-badge ${isTestMode ? 'test' : 'live'}`}>
+              {isTestMode ? 'TEST' : 'LIVE'}
+            </span>
             <button
               onClick={handleOpenRouteSearch}
               className="route-btn"
@@ -502,6 +498,11 @@ function App() {
         </section>
         <section className="section form-area">
           <SearchForm onSubmit={handlePlaceSubmit} />
+          {isTestMode && (
+            <span className="mock-mode-note">
+              テストモード中: Geocoding / Places / Details / 逆ジオコーディングはモック応答
+            </span>
+          )}
           <button
             onClick={togglePinMode}
             className={`pin-mode-btn ${pinMode ? 'active' : ''}`}
@@ -602,13 +603,23 @@ function App() {
         {/* 中央: マップ */}
         <main className="main-center">
           <section className="section last map-container">
-            <Map
-              lat={state.lat}
-              lng={state.lng}
-              zoom={state.zoom}
-              pins={pins}
-              onMapClick={handleMapClick}
-            />
+            {isTestMode ? (
+              <MockMap
+                lat={state.lat}
+                lng={state.lng}
+                zoom={state.zoom}
+                pins={pins}
+                onMapClick={handleMapClick}
+              />
+            ) : (
+              <Map
+                lat={state.lat}
+                lng={state.lng}
+                zoom={state.zoom}
+                pins={pins}
+                onMapClick={handleMapClick}
+              />
+            )}
           </section>
         </main>
 
@@ -647,6 +658,8 @@ function App() {
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         onRestorePin={handleRestorePinFromHistory}
+        isTestMode={isTestMode}
+        onToggleTestMode={toggleTestMode}
       />
 
       {/* 詳細情報モーダル */}
