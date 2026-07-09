@@ -1,334 +1,312 @@
 # GGMap - 緯度経度検索アプリ
 
-Google Maps APIを使用した地図検索・ピン打ち機能を持つWebアプリケーションです。
+Google Maps API を使って、**住所検索**・**場所検索**・**地図表示**・**詳細情報表示**を行う Web アプリケーションです。
 
-## 目次
+この README では、**初めて Google Places API / Geocoding API を触る人**でも、
+「どの機能がどの API に対応しているのか」「コードのどこを見ればよいのか」が分かるように説明します。
 
-- [機能](#機能)
-- [技術スタック](#技術スタック)
-- [セットアップ](#セットアップ)
-- [開発](#開発)
-- [デプロイ](#デプロイ)
-- [トラブルシューティング](#トラブルシューティング)
-- [ユーザーガイド](#ユーザーガイド)
+---
 
-## 機能
+## まず全体像
 
-### 1. 住所検索
-- テキスト入力で住所を検索
-- Google Maps Geocoding APIで緯度経度を取得
-- 地図上にマーカーを表示
+このリポジトリでは、検索の種類によって API を使い分けています。
 
-### 2. 地図クリック機能
-- 地図上の任意の場所をクリックして緯度経度を取得
-- 逆ジオコーディングで住所を自動取得
-- クロスヘアカーソルで視認性向上
+| やりたいこと | 使う API | このリポジトリでの該当箇所 |
+|---|---|---|
+| 住所を入力して座標を出したい | Geocoding API | `src/App.js` の住所検索処理 |
+| 地図上の場所名や POI を探したい | Places API (Text Search) | `src/App.js` の場所検索処理 |
+| 地図を表示したい | Maps JavaScript API | `src/components/Map/` と `src/App.js` |
+| 場所の詳細情報を見たい | Places API Details | `src/App.js` と `docs/FEATURE_ROADMAP.md` |
+| 地図をクリックして住所を知りたい | Geocoding API（逆ジオコーディング） | `src/App.js` の `handleMapClick` |
 
-### 3. ピンモード
-- 複数のピンを地図上に配置可能
-- 各ピンの緯度経度と住所を一覧表示
-- ピンの個別削除・全削除機能
-- 番号付きマーカーで識別
-- ピンクリックでズーム機能
+---
 
-### 4. 場所の詳細情報表示
-- Google Places API Details で詳細情報を取得
-- 写真ギャラリー表示
-- レビュー表示
-- 営業時間表示
-- 連絡先情報表示
+## アーキテクチャの考え方
 
-### 5. 経路検索機能
-- 出発地から目的地までの経路検索
-- 複数の移動手段をサポート:
-  - 車
-  - 公共交通機関（電車・バス）
-  - 徒歩
-  - 自転車
-- ステップバイステップの道案内
-- 所要時間、距離、運賃の表示
-- 複数経路の比較
+このアプリは、ざっくり言うと次の流れで動きます。
 
-### 6. データ管理
-- ピン履歴の localStorage 保存
-- JSON/CSV エクスポート機能
-- JSON インポート機能
-- 検索履歴の保存
-
-## 技術スタック
-
-- **フロントエンド**: React 16.13.1
-- **地図ライブラリ**:
-  - react-google-maps 9.4.5
-  - google-maps-react 2.0.6
-- **スタイリング**: SASS/SCSS
-- **HTTP通信**: Axios 0.20.0
-- **ビルドツール**: Create React App (react-scripts 3.4.3)
-- **デプロイ**: Netlify
-
-## セットアップ
-
-### 前提条件
-
-- Node.js 14.x 以上（推奨: v16-v22）
-- npm 6.x 以上
-- Google Maps API キー
-
-### Google Maps API キーの取得
-
-1. [Google Cloud Console](https://console.cloud.google.com/)にアクセス
-2. 新しいプロジェクトを作成
-3. 以下のAPIを有効化:
-   - Maps JavaScript API（必須）
-   - Geocoding API（必須）
-   - Places API（場所の詳細情報表示に必要）
-   - Directions API（経路検索に必要）
-4. APIキーを作成
-5. 必要に応じてキーの制限を設定
-
-**注意**: 経路検索機能を使用する場合、Directions API の有効化が必須です。
-
-### インストール手順
-
-1. リポジトリをクローン:
-```bash
-git clone https://github.com/BoxPistols/map-api-react.git
-cd map-api-react
+```text
+ユーザー入力
+   ↓
+SearchForm
+   ↓
+App.js で検索種別を判定
+   ├─ 住所検索 → Geocoding API
+   └─ 場所検索 → Places API (Text Search)
+   ↓
+検索結果を state に保存
+   ↓
+Map / PlacesResults / GeoCodeResult に反映
 ```
 
-2. 依存パッケージをインストール:
-```bash
-npm install
+さらに、地図クリック時は次の流れです。
+
+```text
+地図をクリック
+   ↓
+緯度・経度を取得
+   ↓
+Geocoding API で住所を取得
+   ↓
+state 更新
+   ↓
+画面に住所・座標を表示
 ```
 
-3. 環境変数の設定:
+つまり、**API 呼び出しの中心は `src/App.js`** にあり、各コンポーネントはその結果を表示する役割です。
 
-プロジェクトルートに `.env` ファイルを作成:
-```bash
-# Google Maps API Key (必須)
-REACT_APP_API_KEY=your_google_maps_api_key_here
-```
+---
 
-**重要**: `.env` ファイルは `.gitignore` に含まれているため、Git管理されません。
+## 1. 住所検索: Geocoding API
 
-## 開発
+### どこを見る？
+- `src/App.js`
 
-### 開発サーバーの起動
+### 該当箇所
+- `handlePlaceSubmit(place, searchType = 'geocode')`
+- `searchType !== 'places'` の分岐
+- `axios.get(GEOCODE_ENDPOINT, { params: { address, key }})`
 
-```bash
-npm start
-```
+### 何をしている？
+ユーザーが「東京タワー」や「渋谷区○○」のような**住所文字列**を入力すると、Geocoding API を使って緯度・経度に変換します。
 
-ブラウザで [http://localhost:3000](http://localhost:3000) を開きます。
-ファイルを編集すると自動的にリロードされます。
+### この repo での役割
+- 入力された住所を地図の中心に反映
+- 緯度・経度を画面に表示
+- 検索結果があれば住所表示を更新
 
-### プロジェクト構造
+---
 
-```
-map-api-react/
-├── public/              # 静的ファイル
-│   ├── index.html
-│   └── favicon.ico
-├── src/
-│   ├── components/      # Reactコンポーネント
-│   │   ├── Map/        # 地図コンポーネント
-│   │   ├── SearchForm/ # 検索フォーム
-│   │   ├── GeoCodeResult/ # 検索結果表示
-│   │   ├── PinList/    # ピン一覧
-│   │   ├── PlacesResults/ # 場所検索結果
-│   │   ├── PlaceDetail/ # 場所詳細情報
-│   │   │   ├── PhotoGallery.jsx
-│   │   │   ├── ReviewList.jsx
-│   │   │   └── OpeningHours.jsx
-│   │   ├── Route/      # 経路検索
-│   │   │   ├── RouteSearch.jsx
-│   │   │   └── RouteDetails.jsx
-│   │   └── SettingsModal/ # 設定・履歴モーダル
-│   ├── services/       # API サービス層
-│   │   ├── places.js   # Places API
-│   │   └── directions.js # Directions API
-│   ├── utils/          # ユーティリティ関数
-│   │   └── storage.js  # localStorage 管理
-│   ├── App.js          # メインアプリケーション
-│   ├── App.scss        # メインスタイル
-│   └── index.js        # エントリーポイント
-├── docs/               # ドキュメント
-│   ├── FEATURE_ROADMAP.md
-│   └── ARCHITECTURE.md
-├── .env                # 環境変数（要作成）
-├── package.json
-└── README.md
-```
+## 2. 場所検索: Places API (Text Search)
 
-### ビルド
+### どこを見る？
+- `src/App.js`
+- `README.md`
+- `docs/FEATURE_ROADMAP.md`
+- `docs/ARCHITECTURE.md`
 
-本番用ビルドを作成:
-```bash
-npm run build
-```
+### 該当箇所
+- `handlePlaceSubmit(place, searchType = 'places')`
+- `window.google.maps.places.PlacesService`
+- `service.textSearch(request, callback)`
 
-ビルド成果物は `build/` フォルダに生成されます。
+### 何をしている？
+ユーザーが「札内川 中島新橋」「渋谷 カフェ」のように、**場所名・POI 名・自然文っぽい検索語**を入力したときに使います。
 
-### テスト
+この repo では、Places API の Text Search を使って検索結果を取得し、
+その結果を一覧表示します。
 
-```bash
-npm test
-```
+### この repo での役割
+- 検索結果を `placesResults` に保存
+- 左サイドバー / モバイルドロワーに一覧表示
+- 最初の結果を地図の中心に移動
+- 検索履歴を保存
 
-## デプロイ
+---
 
-### Netlifyへのデプロイ
+## 3. 地図表示: Maps JavaScript API
 
-1. **Netlifyアカウントの作成**
-   - [Netlify](https://www.netlify.com/)でアカウント作成
+### どこを見る？
+- `src/components/Map/`
+- `src/App.js`
+- `docs/ARCHITECTURE.md`
 
-2. **GitHubリポジトリと連携**
-   - Netlifyダッシュボードから「New site from Git」を選択
-   - GitHubリポジトリを選択
+### 該当箇所
+- `<Map lat={...} lng={...} zoom={...} pins={pins} onMapClick={handleMapClick} />`
+- `docs/ARCHITECTURE.md` の Frontend → External APIs の図
 
-3. **ビルド設定**
-   - Build command: `npm run build`
-   - Publish directory: `build`
+### 何をしている？
+地図の描画、マーカー表示、クリックイベントの処理を行います。
 
-4. **環境変数の設定**
-   - Site settings → Build & deploy → Environment
-   - `REACT_APP_API_KEY` を追加
+### この repo での役割
+- 現在地や検索結果の座標を地図中央に表示
+- ピンを表示
+- 地図クリックで逆ジオコーディングを実行
 
-5. **デプロイ**
-   - 自動デプロイが開始されます
-   - main/masterブランチへのプッシュで自動的に再デプロイ
+---
 
-### 手動デプロイ
+## 4. 地図クリック → 逆ジオコーディング
 
-```bash
-npm run build
-# build/ フォルダの内容をホスティングサービスにアップロード
-```
+### どこを見る？
+- `src/App.js`
 
-## トラブルシューティング
+### 該当箇所
+- `handleMapClick`
+- `axios.get(GEOCODE_ENDPOINT, { params: { latlng, key }})`
 
-### Node.js 17以降でビルドエラーが発生する
+### 何をしている？
+地図上の任意の地点をクリックすると、緯度・経度から住所を取得します。
 
-**症状**: `error:0308010C:digital envelope routines::unsupported`
+### この repo での役割
+- クリック地点の住所を表示
+- ピンモード ON のときはピン追加にも使う
 
-**原因**: OpenSSLのレガシーアルゴリズムがデフォルトで無効化されている
+---
 
-**解決策**: すでに `package.json` に修正済み
-```json
-"build": "NODE_OPTIONS=--openssl-legacy-provider react-scripts build"
-```
+## 5. 場所の詳細表示: Places API Details
 
-### 地図が表示されない
+### どこを見る？
+- `src/App.js`
+- `docs/FEATURE_ROADMAP.md`
+- `README.md`
 
-**原因1**: APIキーが設定されていない
-- `.env` ファイルに `REACT_APP_API_KEY` が設定されているか確認
+### 該当箇所
+- `handleShowPlaceDetails(placeId)`
+- `getPlaceDetails(placeId)`
+- `PlaceDetail` コンポーネント
+- `docs/FEATURE_ROADMAP.md` の Phase 1
 
-**原因2**: APIが有効化されていない
-- Google Cloud ConsoleでMaps JavaScript APIとGeocoding APIが有効か確認
+### 何をしている？
+検索結果から 1 件を選んで、より詳しい情報を表示します。
 
-**原因3**: APIキーの制限
-- APIキーの制限設定を確認（必要に応じてHTTPリファラーを追加）
+### この repo での役割
+- 詳細パネルを開く
+- Place Details を取得する
+- 写真・レビュー・営業時間などの表示に備える
 
-### yarn.lock と package-lock.json の競合
+---
 
-本プロジェクトは **npm** を使用します。`yarn.lock` は削除されています。
+## ファイルごとの役割
 
-### 公共交通機関の経路が検索できない
+### `src/App.js`
+このアプリの**中心**です。
 
-**症状**: 公共交通機関（電車・バス）の経路検索が失敗する
+- 住所検索
+- 場所検索
+- 地図クリック処理
+- ピン管理
+- 詳細表示
+- 経路検索
 
-**主な原因**:
+などの主要ロジックが集まっています。
 
-1. **Directions API が有効になっていない**
-   - Google Cloud Console で Directions API を有効化してください
+### `src/components/SearchForm/`
+検索入力 UI を担当します。
 
-2. **地域でデータが利用できない**
-   - Google Maps の公共交通データは、地域によって利用可否が異なります
-   - 日本国内でも一部の地域では公共交通データが不完全な場合があります
+### `src/components/Map/`
+Google Map の表示を担当します。
 
-3. **出発地/目的地が公共交通機関から離れている**
-   - 駅やバス停から離れすぎている場合、経路が見つからないことがあります
+### `src/components/PlacesResults/`
+Places API の検索結果一覧を表示します。
 
-**対処法**:
-- 他の移動手段（車、徒歩、自転車）を試してください
-- 出発地や目的地を公共交通機関の近くに変更してください
-- エラーメッセージの詳細を確認してください
+### `src/components/GeoCodeResult/`
+住所・緯度・経度の表示を担当します。
 
-**代替サービス**:
-公共交通機関の詳細な経路検索が必要な場合は、以下のサービスも検討してください：
-- [Google Transit Partner Program](https://maps.google.com/landing/transit/cities/)
-- [駅すぱあと](https://www.ekispert.jp/)
-- [ジョルダン](https://www.jorudan.co.jp/)
-- [NAVITIME](https://www.navitime.co.jp/)
+### `src/components/PlaceDetail/`
+Places Details の詳細表示を担当します。
 
-## ユーザーガイド
+### `src/services/places.js`
+Places API 関連の処理をまとめるためのサービス層です。
 
-詳しい使い方は [USER_GUIDE.md](./USER_GUIDE.md) を参照してください。
+### `src/services/directions.js`
+経路検索処理をまとめるサービス層です。
 
-## 主な変更履歴
+### `src/utils/storage.js`
+localStorage への保存・読み込みを扱います。
 
-### v2.0 (最新)
-- **経路検索機能を追加**
-  - Google Directions API を使用した経路検索
-  - 複数の移動手段をサポート（車、公共交通、徒歩、自転車）
-  - ステップバイステップの道案内表示
-  - 所要時間、距離、運賃の表示
-  - 公共交通機関のエラーハンドリング改善
-- **場所の詳細情報表示機能を追加**
-  - Google Places API Details を使用
-  - 写真ギャラリー、レビュー、営業時間を表示
-- **データ管理機能を強化**
-  - JSON/CSV エクスポート機能
-  - JSON インポート機能
-  - ピン履歴・検索履歴の localStorage 保存
+---
 
-### v1.6
-- ピンモード機能を追加
-- 複数ピンの配置と管理機能
-- ピン一覧表示UI
-- ピンクリックでズーム機能
+## 初めて Google Places API を触る人向けの読み方
 
-### v1.5
-- 地図クリックで緯度経度取得機能を追加
-- 逆ジオコーディング対応
-- マウスカーソルをcrosshairに変更
+この repo を読むときは、次の順番がおすすめです。
 
-### v1.4
-- Netlifyデプロイエラー修正
-- Node.js 17+対応
+### 1. まず `README.md`
+プロダクト全体で何をしているかを確認します。
 
-## コントリビューション
+### 2. 次に `src/App.js`
+どの API をどこで呼んでいるかを見ます。
 
-1. このリポジトリをフォーク
-2. フィーチャーブランチを作成 (`git checkout -b feature/amazing-feature`)
-3. 変更をコミット (`git commit -m 'Add some amazing feature'`)
-4. ブランチにプッシュ (`git push origin feature/amazing-feature`)
-5. プルリクエストを作成
+### 3. `docs/ARCHITECTURE.md`
+アプリの構造を図で把握します。
 
-## ライセンス
+### 4. `docs/FEATURE_ROADMAP.md`
+Places API Details など、今後の拡張方針を見ます。
 
-このプロジェクトはMITライセンスの下で公開されています。
+### 5. `src/components/PlacesResults/` と `src/components/PlaceDetail/`
+結果表示・詳細表示の UI を確認します。
 
-## リンク
+---
 
-- [Google Maps JavaScript API ドキュメント](https://developers.google.com/maps/documentation/javascript)
-- [React ドキュメント](https://reactjs.org/)
-- [Create React App ドキュメント](https://create-react-app.dev/)
+## どの機能がどの API に対応しているか
 
-## 今後の実装予定
+### 住所検索
+- API: Geocoding API
+- 該当: `src/App.js`
+- 用途: 住所文字列を緯度・経度に変換
 
-以下の機能は今後実装予定です：
+### 場所検索
+- API: Places API (Text Search)
+- 該当: `src/App.js`
+- 用途: POI 名や自然言語検索
 
-### Firebase 連携
-- **Firebase Authentication**: Googleアカウントでのログイン機能
-- **Cloud Firestore**: クラウドへのデータ同期
-- **マルチデバイス対応**: 複数デバイス間でのデータ共有
-- **ハイブリッド保存**: localStorage と Firebase の併用
-  - オフライン時は localStorage で動作
-  - オンライン時は自動的に Firebase へ同期
+### 地図表示
+- API: Maps JavaScript API
+- 該当: `src/components/Map/`
+- 用途: 地図描画とマーカー表示
 
-詳細な実装計画は `.env.example` および今後追加予定のドキュメントを参照してください。
+### 詳細表示
+- API: Places API Details
+- 該当: `src/App.js` / `docs/FEATURE_ROADMAP.md`
+- 用途: 営業時間、レビュー、写真などの表示
 
-## お問い合わせ
+### 地図クリック時の住所取得
+- API: Geocoding API（逆ジオコーディング）
+- 該当: `src/App.js`
+- 用途: クリック地点の住所を表示
 
-プロジェクトに関する質問や提案がある場合は、GitHubのIssuesでお知らせください。
+---
+
+## このアーキテクチャのポイント
+
+このアプリのポイントは、**検索の種類ごとに API を分けている**ことです。
+
+- 住所なら Geocoding API
+- 場所名なら Places API
+- 地図表示は Maps JavaScript API
+- 詳細は Places Details
+
+このように役割を分けることで、コードが分かりやすくなり、将来 `locationBias` や `includedType` のような検索条件を追加しやすくなります。
+
+---
+
+## セットアップ時に必要な API
+
+Google Cloud Console で以下を有効にしてください。
+
+- Maps JavaScript API
+- Geocoding API
+- Places API
+- Directions API（経路検索を使う場合）
+
+---
+
+## 補足
+
+このリポジトリは、現時点では主に**フロントエンド中心の構成**です。将来的にバックエンドを追加する場合は、以下のように責務を分けると分かりやすくなります。
+
+- フロントエンド: 入力 UI、地図表示、結果表示
+- バックエンド: API 呼び分け、検索条件の正規化、型マッピング、キャッシュ
+
+---
+
+## 関連ドキュメント
+
+- `docs/ARCHITECTURE.md`
+- `docs/FEATURE_ROADMAP.md`
+- `README.md`
+- `.claude/skills/google-maps-integration.md`
+- `.claude/skills/api-testing.md`
+
+---
+
+## まとめ
+
+このアプリは、**検索したい内容に応じて API を使い分ける**構成です。
+
+- 住所検索 → Geocoding API
+- 場所検索 → Places API (Text Search)
+- 地図表示 → Maps JavaScript API
+- 詳細表示 → Places API Details
+- クリック地点の住所取得 → Geocoding API
+
+まずは `src/App.js` を見ると、どの機能がどの API に対応しているかを理解しやすいです。
